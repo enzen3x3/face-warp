@@ -450,73 +450,40 @@ function calcTarget(src, W, H) {
   var tgt = src.map(function(p){ return {x:p.x, y:p.y}; });
   var targetR = ratio === 'gold' ? PHI : SQ2;
 
-  // 顔の境界
+  // 顔の境界（額〜あご、左端〜右端）
   var fTop = src[KP.faceTop].y;
   var fBot = src[KP.faceBot].y;
   var fL   = src[KP.faceL].x;
   var fR   = src[KP.faceR].x;
-  var fH = fBot - fTop;
-  var fW = fR - fL;
-  var fCX = (fL + fR) / 2;
-  var fCY = (fTop + fBot) / 2;
+  var fH   = fBot - fTop;
+  var fW   = fR - fL;
+  var fCY  = (fTop + fBot) / 2;
 
-  // 現在の比率
+  // 現在の縦横比
   var curR = fH / fW;
-  // 理想の高さ（幅は固定して高さを変える）
-  var idealH = fW * targetR;
+  // 理想の高さ（顔の中心を固定して上下に伸縮）
+  var idealH   = fW * targetR;
   var idealTop = fCY - idealH / 2;
+  var idealBot = fCY + idealH / 2;
 
-  // 三分割の理想位置
-  // 顔を額〜あごで3等分
-  var idealThird = idealH / 3.0;
-  // 目ライン = 上から1/3
-  var idealEyeY   = idealTop + idealThird;
-  // 鼻下ライン = 上から2/3
-  var idealNoseY  = idealTop + idealThird * 2.0;
-  // 口ライン = 上から2.4/3
-  var idealMouthY = idealTop + idealThird * 2.4;
-
-  // 現在のY位置
-  var currEyeY   = (src[KP.eyeLC] ? src[KP.eyeLC].y : src[KP.eyeLI].y);
-  var currNoseY  = src[KP.noseTip].y;
-  var currMouthY = (src[KP.mouthT].y + src[KP.mouthB].y) / 2;
+  // スケール係数（現在→理想）
+  var scaleY = idealH / fH;
 
   for (var i = 0; i < src.length; i++) {
     var p = src[i];
-    // 顔の内側かどうか（顔外のピクセルは変形しない）
-    var normY = (p.y - fTop) / fH; // 0 = 額, 1 = あご
-    var normX = (p.x - fL)  / fW; // 0 = 左端, 1 = 右端
 
-    // 顔の外側は変形なし（背景が崩れるのを防ぐ）
-    if (normY < -0.05 || normY > 1.05) continue;
-    if (normX < -0.05 || normX > 1.05) continue;
+    // 顔領域内のランドマークのみ変形
+    var normY = (p.y - fTop) / fH;
+    var normX = (p.x - fL)  / fW;
+    if (normY < -0.08 || normY > 1.08) continue;
+    if (normX < -0.08 || normX > 1.08) continue;
 
-    // Y方向の変形：三つの制御点（目・鼻・口）を理想位置に移動
-    var newY = p.y;
+    // Y方向：顔の中心を軸にスケール
+    // 顔の中心からの距離をscaleYで拡大・縮小するだけ
+    var newY = fCY + (p.y - fCY) * scaleY;
 
-    if (normY <= (currEyeY - fTop) / fH) {
-      // 額〜目ライン：額を上に引っ張る
-      var t = normY / ((currEyeY - fTop) / fH);
-      var idealY = idealTop + t * idealThird;
-      newY = idealY;
-    } else if (normY <= (currNoseY - fTop) / fH) {
-      // 目ライン〜鼻先：目と鼻の間を補間
-      var t = (p.y - currEyeY) / (currNoseY - currEyeY);
-      newY = idealEyeY + t * (idealNoseY - idealEyeY);
-    } else if (normY <= (currMouthY - fTop) / fH) {
-      // 鼻先〜口：補間
-      var t = (p.y - currNoseY) / (currMouthY - currNoseY);
-      newY = idealNoseY + t * (idealMouthY - idealNoseY);
-    } else {
-      // 口〜あご：補間
-      var t = (p.y - currMouthY) / (fBot - currMouthY);
-      newY = idealMouthY + t * ((idealTop + idealH) - idealMouthY);
-    }
-
-    // 強度ブレンド（strength=1で完全変形）
+    // 強度ブレンド
     tgt[i].y = p.y + (newY - p.y) * strength;
-
-    // X方向：顔の横幅は変えない（今後の改善余地あり）
   }
 
   return tgt;
