@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FACEratio WARP</title>
+<style>
+:root{
+  --bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a28;--border:#2a2a3f;
+  --gold:#c8a96e;--gold2:#e8c88e;--silver:#8ab0c0;
+  --text:#e8e0d0;--text2:#8a7a6a;--text3:#3a3a4a;
+  --accent:#e87858;--green:#58c888;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--text);font-family:'Hiragino Sans','Yu Gothic',sans-serif;min-height:100vh;}
+.app{max-width:480px;margin:0 auto;padding:0 0 80px;}
+
+header{padding:28px 20px 20px;text-align:center;border-bottom:1px solid var(--border);}
+.logo{font-size:9px;letter-spacing:7px;color:var(--gold);margin-bottom:8px;}
+header h1{font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--gold2),var(--gold),var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;}
+header p{font-size:11px;color:var(--text2);line-height:1.7;}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;margin:12px 14px;overflow:hidden;}
+.card-head{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.num{width:24px;height:24px;border-radius:50%;background:var(--border);color:var(--text2);
+  font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s;}
+.num.done{background:var(--gold);color:#000;}
+.card-head h2{font-size:13px;font-weight:700;}
+.card-body{padding:14px;}
+
+.upload-area{border:2px dashed var(--border);border-radius:12px;padding:22px 14px;text-align:center;
+  cursor:pointer;background:var(--surface2);display:flex;flex-direction:column;align-items:center;gap:6px;}
+.upload-area.loaded{border-style:solid;border-color:var(--gold);}
+.upload-area .icon{font-size:30px;}
+.upload-area .label{font-size:13px;color:var(--text2);}
+.upload-area .sub{font-size:10px;color:var(--text3);}
+input[type=file]{display:none;}
+
+.btn-row{display:flex;gap:8px;margin-top:8px;}
+.btn-cam{flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--border);
+  background:var(--surface2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;}
+
+#camSection{display:none;margin-top:8px;}
+#camVideo{display:block;width:100%;border-radius:10px;background:#000;}
+.cam-btns{display:flex;gap:6px;margin-top:6px;}
+.cam-btns button{flex:1;padding:9px;border-radius:9px;border:none;font-size:11px;font-weight:700;cursor:pointer;}
+.cam-shoot{background:linear-gradient(135deg,var(--gold),var(--accent));color:#000;}
+.cam-switch,.cam-cancel{background:var(--surface2);border:1.5px solid var(--border)!important;color:var(--text2);}
+
+.ratio-switch{display:flex;gap:8px;}
+.ratio-btn{flex:1;padding:14px 8px;border-radius:12px;border:2px solid var(--border);
+  background:var(--surface2);cursor:pointer;text-align:center;transition:all .2s;}
+.ratio-btn.active-gold{border-color:var(--gold);background:rgba(200,169,110,.08);}
+.ratio-btn.active-silver{border-color:var(--silver);background:rgba(138,176,192,.08);}
+.ratio-btn .name{font-size:14px;font-weight:800;}
+.ratio-btn .num2{font-size:10px;color:var(--text2);margin-top:3px;}
+.ratio-btn .desc{font-size:9px;color:var(--text3);margin-top:2px;}
+.ratio-btn.active-gold .name{color:var(--gold2);}
+.ratio-btn.active-silver .name{color:var(--silver);}
+
+.slider-wrap{margin-top:12px;display:flex;align-items:center;gap:10px;}
+.slider-wrap label{font-size:11px;color:var(--text2);white-space:nowrap;}
+input[type=range]{flex:1;accent-color:var(--gold);}
+.slval{font-size:11px;color:var(--text2);width:32px;text-align:right;}
+
+.btn-primary{width:100%;padding:14px;border:none;border-radius:13px;
+  background:linear-gradient(135deg,var(--gold),var(--accent));
+  color:#000;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:8px;}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;}
+
+.stbox{padding:10px 14px;border-radius:10px;font-size:12px;text-align:center;display:none;margin-bottom:8px;}
+.stbox.show{display:block;}
+.stbox.ok{background:rgba(88,200,136,.1);border:1px solid rgba(88,200,136,.3);color:var(--green);}
+.stbox.err{background:rgba(232,120,88,.1);border:1px solid rgba(232,120,88,.3);color:var(--accent);}
+.stbox.info{background:rgba(200,169,110,.08);border:1px solid rgba(200,169,110,.2);color:var(--gold);}
+
+.prog{height:3px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:8px;display:none;}
+.prog.show{display:block;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--accent));border-radius:3px;transition:width .3s;}
+
+.result-box{background:#000;border-radius:12px;overflow:hidden;min-height:160px;
+  display:flex;align-items:center;justify-content:center;}
+canvas{display:block;width:100%;}
+.ph{padding:32px 16px;text-align:center;color:var(--text3);font-size:11px;line-height:2;}
+.ph span{font-size:32px;display:block;margin-bottom:6px;}
+
+.cmp-btns{display:none;gap:6px;margin-bottom:10px;}
+.cmp-btn{flex:1;padding:7px 4px;border:1.5px solid var(--border);border-radius:9px;
+  background:var(--surface2);color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;}
+.cmp-btn.on{border-color:var(--gold);color:var(--gold);background:rgba(200,169,110,.08);}
+
+.btn-row2{display:none;gap:8px;margin-top:8px;}
+.btn-sub{flex:1;padding:11px;border:1.5px solid var(--border);border-radius:11px;
+  background:var(--surface2);color:var(--text2);font-size:12px;cursor:pointer;}
+
+.stats{margin-top:10px;padding:12px 14px;background:var(--surface2);border-radius:11px;
+  border:1px solid var(--border);display:none;}
+.stats.show{display:block;}
+.stat{display:flex;justify-content:space-between;align-items:center;
+  padding:4px 0;border-bottom:1px solid var(--border);font-size:11px;}
+.stat:last-child{border:none;}
+.sl{color:var(--text2);}
+.sv{font-weight:700;}
+.sv.g{color:var(--green);}
+.sv.m{color:var(--gold);}
+.sv.b{color:var(--accent);}
+
+.diag{margin-top:10px;padding:12px 14px;background:rgba(200,169,110,.05);
+  border:1px solid rgba(200,169,110,.2);border-radius:11px;font-size:11px;
+  color:var(--text);line-height:1.9;display:none;}
+.diag.show{display:block;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<header>
+  <div class="logo">FACERATIO WARP</div>
+  <h1>顔変換アプリ</h1>
+  <p>黄金比・白銀比の「理想の顔」へ変換</p>
+</header>
+
+<!-- STEP 1 -->
+<div class="card">
+  <div class="card-head"><div class="num" id="n1">1</div><h2>顔写真を選ぶ</h2></div>
+  <div class="card-body">
+    <div class="upload-area" id="uploadArea" onclick="document.getElementById('photoIn').click()">
+      <span class="icon">🖼</span>
+      <span class="label">タップして写真を選択</span>
+      <span class="sub">正面・明るい場所推奨</span>
+    </div>
+    <input type="file" id="photoIn" accept="image/*">
+    <div class="btn-row">
+      <button class="btn-cam" onclick="startCam()">📷 カメラで撮影</button>
+    </div>
+    <div id="camSection">
+      <video id="camVideo" playsinline muted></video>
+      <div class="cam-btns">
+        <button class="cam-switch" onclick="switchCam()">🔄 切替</button>
+        <button class="cam-shoot" onclick="shootCam()">⬤ 撮影</button>
+        <button class="cam-cancel" onclick="stopCam()">✕</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="card">
+  <div class="card-head"><div class="num" id="n2">2</div><h2>変換する比率を選ぶ</h2></div>
+  <div class="card-body">
+    <div class="ratio-switch">
+      <div class="ratio-btn active-gold" id="btnG" onclick="setRatio('gold')">
+        <div class="name">✨ 黄金比</div>
+        <div class="num2">1 : 1.618</div>
+        <div class="desc">美人・大人顔</div>
+      </div>
+      <div class="ratio-btn" id="btnS" onclick="setRatio('silver')">
+        <div class="name">🌸 白銀比</div>
+        <div class="num2">1 : 1.414</div>
+        <div class="desc">かわいい・若顔</div>
+      </div>
+    </div>
+    <div class="slider-wrap">
+      <label>変換強度</label>
+      <input type="range" id="strSlider" min="0" max="100" value="50" oninput="setStr(this.value)">
+      <span class="slval" id="strVal">50%</span>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="card">
+  <div class="card-head"><div class="num" id="n3">3</div><h2>変換する</h2></div>
+  <div class="card-body">
+    <button class="btn-primary" id="warpBtn" onclick="doWarp()" disabled>🔮 顔を変換する</button>
+    <div class="stbox info show" id="stbox">写真を選択してください</div>
+    <div class="prog" id="prog"><div class="prog-fill" id="progFill" style="width:0"></div></div>
+
+    <div class="cmp-btns" id="cmpBtns">
+      <button class="cmp-btn on" id="cOrig" onclick="showView('orig')">元の顔</button>
+      <button class="cmp-btn" id="cWarp" onclick="showView('warp')">変換後</button>
+      <button class="cmp-btn" id="cSide" onclick="showView('side')">比較</button>
+    </div>
+
+    <div class="result-box" id="resultBox">
+      <div class="ph" id="ph"><span>✨</span>写真を選択して<br>「顔を変換する」をタップ</div>
+      <canvas id="rc" style="display:none"></canvas>
+    </div>
+
+    <div class="stats" id="stats">
+      <div class="stat"><span class="sl">顔の縦横比</span><span class="sv" id="sFace">--</span></div>
+      <div class="stat"><span class="sl">目の幅比</span><span class="sv" id="sEye">--</span></div>
+      <div class="stat"><span class="sl">下顔面比</span><span class="sv" id="sLow">--</span></div>
+      <div class="stat"><span class="sl">黄金比スコア</span><span class="sv" id="sScore">--</span></div>
+    </div>
+    <div class="diag" id="diag"></div>
+
+    <div class="btn-row2" id="saveRow">
+      <button class="btn-sub" onclick="doWarp()">↩ 再変換</button>
+      <button class="btn-sub" onclick="saveImg()">💾 保存</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+<script>
+// ============================================================
+// 定数
+// ============================================================
+var PHI  = 1.6180339887;  // 黄金比
+var SQ2  = 1.4142135624;  // 白銀比
+
+// MediaPipe FaceMesh 主要ランドマークインデックス
+var KP = {
+  faceTop:10, faceBot:152, faceL:234, faceR:454,
+  eyeLO:33,  eyeLI:133,  eyeRO:263, eyeRI:362,
+  eyeLC:468, eyeRC:473,             // refined
+  noseTip:4, noseRoot:168,
+  mouthL:61, mouthR:291,
+  mouthT:0,  mouthB:17,
+  chin:175,
+};
+
+// ============================================================
+// 状態
+// ============================================================
+var photo     = null;   // HTMLImageElement
+var ratio     = 'gold';
+var strength  = 0.5;
+var lms       = null;   // [{x,y}] ピクセル座標
+var warpData  = null;   // ImageData（ワープ後）
+var curView   = 'warp';
+var faceMesh  = null;
+var fmReady   = false;
+var camStream = null;
+var camFacing = 'user';
+var fmCb      = null;   // FaceMesh結果コールバック
+
+// ============================================================
+// FaceMesh 初期化
+// ============================================================
+function initFM() {
+  if (faceMesh) return;
+  st('顔検出エンジンをロード中…', 'info');
+  try {
+    faceMesh = new FaceMesh({
+      locateFile: f => 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/' + f
+    });
+    faceMesh.setOptions({
+      maxNumFaces: 1,
+      refineLandmarks: true,
+      minDetectionConfidence: 0.4,
+      minTrackingConfidence: 0.4,
+    });
+    faceMesh.onResults(function(res) {
+      if (fmCb) { fmCb(res); fmCb = null; }
+    });
+    faceMesh.initialize().then(function() {
+      fmReady = true;
+      st('エンジン準備完了！', 'ok');
+      setTimeout(function(){ document.getElementById('stbox').classList.remove('show'); }, 1500);
+    }).catch(function(e) {
+      st('エンジン初期化失敗: ' + e.message, 'err');
+    });
+  } catch(e) {
+    st('FaceMesh生成失敗。リロードしてください: ' + e.message, 'err');
+  }
+}
+
+function detectFace(imgEl) {
+  return new Promise(function(resolve, reject) {
+    if (!fmReady) { reject(new Error('エンジン未準備')); return; }
+    var timer = setTimeout(function() {
+      fmCb = null;
+      reject(new Error('タイムアウト。ページをリロードして再試行してください'));
+    }, 12000);
+    fmCb = function(res) {
+      clearTimeout(timer);
+      if (res.multiFaceLandmarks && res.multiFaceLandmarks.length > 0) {
+        resolve(res.multiFaceLandmarks[0]);
+      } else {
+        reject(new Error('顔が検出できませんでした。正面の写真を使ってください'));
+      }
+    };
+    faceMesh.send({ image: imgEl }).catch(function(e) {
+      clearTimeout(timer); fmCb = null; reject(e);
+    });
+  });
+}
+
+// ============================================================
+// カメラ
+// ============================================================
+async function startCam() {
+  var cons = [
+    {video:{facingMode:{exact:camFacing},width:{ideal:1280},height:{ideal:1280}},audio:false},
+    {video:{facingMode:camFacing},audio:false},
+    {video:true,audio:false},
+  ];
+  if (camStream) { camStream.getTracks().forEach(t=>t.stop()); camStream=null; }
+  for (var c of cons) {
+    try { camStream = await navigator.mediaDevices.getUserMedia(c); break; } catch(e) {}
+  }
+  if (!camStream) { st('カメラを起動できませんでした', 'err'); return; }
+  var v = document.getElementById('camVideo');
+  v.srcObject = camStream; v.play();
+  document.getElementById('camSection').style.display = 'block';
+}
+function switchCam() { camFacing = camFacing==='user'?'environment':'user'; startCam(); }
+function shootCam() {
+  var v = document.getElementById('camVideo');
+  if (!v.videoWidth) return;
+  var c = document.createElement('canvas');
+  c.width = v.videoWidth; c.height = v.videoHeight;
+  var cx = c.getContext('2d');
+  if (camFacing==='user') { cx.translate(c.width,0); cx.scale(-1,1); }
+  cx.drawImage(v,0,0);
+  var img = new Image();
+  img.onload = function() { setPhoto(img); stopCam(); };
+  img.src = c.toDataURL('image/jpeg', 0.92);
+}
+function stopCam() {
+  if (camStream) { camStream.getTracks().forEach(t=>t.stop()); camStream=null; }
+  document.getElementById('camSection').style.display = 'none';
+  document.getElementById('camVideo').srcObject = null;
+}
+
+// ============================================================
+// 写真セット
+// ============================================================
+document.getElementById('photoIn').addEventListener('change', function(e) {
+  var f = e.target.files[0]; if (!f) return; e.target.value = '';
+  var r = new FileReader();
+  r.onload = function(ev) {
+    var img = new Image();
+    img.onload = function() { setPhoto(img); };
+    img.src = ev.target.result;
+  };
+  r.readAsDataURL(f);
+});
+
+function setPhoto(img) {
+  photo = img; lms = null; warpData = null;
+  document.getElementById('n1').classList.add('done');
+  var ua = document.getElementById('uploadArea');
+  ua.classList.add('loaded');
+  ua.innerHTML = '<span style="font-size:18px">✅</span><span style="font-size:12px;color:var(--gold)">読み込み完了（タップで変更）</span>';
+  document.getElementById('warpBtn').disabled = false;
+  document.getElementById('cmpBtns').style.display = 'none';
+  document.getElementById('saveRow').style.display = 'none';
+  document.getElementById('stats').classList.remove('show');
+  document.getElementById('diag').classList.remove('show');
+  document.getElementById('ph').style.display = 'block';
+  document.getElementById('rc').style.display = 'none';
+  st('写真OK！「顔を変換する」を押してください', 'ok');
+  if (!faceMesh) initFM();
+}
+
+function setRatio(r) {
+  ratio = r;
+  document.getElementById('btnG').className = 'ratio-btn'+(r==='gold'?' active-gold':'');
+  document.getElementById('btnS').className = 'ratio-btn'+(r==='silver'?' active-silver':'');
+}
+function setStr(v) {
+  strength = parseInt(v)/100;
+  document.getElementById('strVal').textContent = v+'%';
+}
+
+// ============================================================
+// メイン：ワープ実行
+// ============================================================
+async function doWarp() {
+  if (!photo) { st('写真を先に選択してください', 'err'); return; }
+  document.getElementById('warpBtn').disabled = true;
+  setProg(0, true);
+
+  try {
+    // エンジン待機
+    if (!fmReady) {
+      if (!faceMesh) initFM();
+      st('エンジン起動中…少し待ってください', 'info');
+      for (var i=0; i<30; i++) {
+        await sleep(500);
+        if (fmReady) break;
+      }
+      if (!fmReady) throw new Error('エンジンの起動に時間がかかっています。再度押してください');
+    }
+
+    // Step1: 顔検出
+    st('顔を検出中…', 'info'); setProg(15);
+    var rawLms = await detectFace(photo);
+    setProg(35);
+
+    // Step2: ピクセル座標変換
+    var W = photo.naturalWidth, H = photo.naturalHeight;
+    lms = rawLms.map(function(p) { return { x: p.x*W, y: p.y*H }; });
+
+    // Step3: 理想座標計算
+    st('比率を計算中…', 'info'); setProg(50);
+    var tgtLms = calcTarget(lms, W, H);
+    setProg(60);
+
+    // Step4: ワープ
+    st('変換中…（少し時間がかかります）', 'info');
+    await sleep(30);
+    var rc = document.getElementById('rc');
+    rc.width = W; rc.height = H;
+    var ctx = rc.getContext('2d');
+    ctx.drawImage(photo, 0, 0);
+    var srcData = ctx.getImageData(0, 0, W, H);
+
+    setProg(65);
+    warpData = await warpImage(srcData, lms, tgtLms, W, H);
+    setProg(95);
+
+    // Step5: 結果描画
+    ctx.putImageData(warpData, 0, 0);
+    setProg(100);
+
+    // UI更新
+    document.getElementById('ph').style.display = 'none';
+    rc.style.display = 'block';
+    document.getElementById('cmpBtns').style.display = 'flex';
+    document.getElementById('saveRow').style.display = 'flex';
+    document.getElementById('n3').classList.add('done');
+    curView = 'warp'; updCmp('warp');
+
+    var stats = calcStats(lms, W, H);
+    showStats(stats);
+    showDiag(stats);
+    st('✨ 変換完了！比較ボタンで違いを確認できます', 'ok');
+
+  } catch(e) {
+    st('❌ ' + e.message, 'err');
+  }
+
+  setProg(0, false);
+  document.getElementById('warpBtn').disabled = false;
+}
+
+function sleep(ms) { return new Promise(function(r){ setTimeout(r,ms); }); }
+
+// ============================================================
+// 理想ランドマーク計算
+// ============================================================
+function calcTarget(src, W, H) {
+  var tgt = src.map(function(p){ return {x:p.x, y:p.y}; });
+  var targetR = ratio === 'gold' ? PHI : SQ2;
+
+  // 顔の境界
+  var fTop = src[KP.faceTop].y;
+  var fBot = src[KP.faceBot].y;
+  var fL   = src[KP.faceL].x;
+  var fR   = src[KP.faceR].x;
+  var fH = fBot - fTop;
+  var fW = fR - fL;
+  var fCX = (fL + fR) / 2;
+  var fCY = (fTop + fBot) / 2;
+
+  // 現在の比率
+  var curR = fH / fW;
+  // 理想の高さ（幅は固定して高さを変える）
+  var idealH = fW * targetR;
+  var idealTop = fCY - idealH / 2;
+
+  // 三分割の理想位置
+  // 顔を額〜あごで3等分
+  var idealThird = idealH / 3.0;
+  // 目ライン = 上から1/3
+  var idealEyeY   = idealTop + idealThird;
+  // 鼻下ライン = 上から2/3
+  var idealNoseY  = idealTop + idealThird * 2.0;
+  // 口ライン = 上から2.4/3
+  var idealMouthY = idealTop + idealThird * 2.4;
+
+  // 現在のY位置
+  var currEyeY   = (src[KP.eyeLC] ? src[KP.eyeLC].y : src[KP.eyeLI].y);
+  var currNoseY  = src[KP.noseTip].y;
+  var currMouthY = (src[KP.mouthT].y + src[KP.mouthB].y) / 2;
+
+  for (var i = 0; i < src.length; i++) {
+    var p = src[i];
+    // 顔の内側かどうか（顔外のピクセルは変形しない）
+    var normY = (p.y - fTop) / fH; // 0 = 額, 1 = あご
+    var normX = (p.x - fL)  / fW; // 0 = 左端, 1 = 右端
+
+    // 顔の外側は変形なし（背景が崩れるのを防ぐ）
+    if (normY < -0.05 || normY > 1.05) continue;
+    if (normX < -0.05 || normX > 1.05) continue;
+
+    // Y方向の変形：三つの制御点（目・鼻・口）を理想位置に移動
+    var newY = p.y;
+
+    if (normY <= (currEyeY - fTop) / fH) {
+      // 額〜目ライン：額を上に引っ張る
+      var t = normY / ((currEyeY - fTop) / fH);
+      var idealY = idealTop + t * idealThird;
+      newY = idealY;
+    } else if (normY <= (currNoseY - fTop) / fH) {
+      // 目ライン〜鼻先：目と鼻の間を補間
+      var t = (p.y - currEyeY) / (currNoseY - currEyeY);
+      newY = idealEyeY + t * (idealNoseY - idealEyeY);
+    } else if (normY <= (currMouthY - fTop) / fH) {
+      // 鼻先〜口：補間
+      var t = (p.y - currNoseY) / (currMouthY - currNoseY);
+      newY = idealNoseY + t * (idealMouthY - idealNoseY);
+    } else {
+      // 口〜あご：補間
+      var t = (p.y - currMouthY) / (fBot - currMouthY);
+      newY = idealMouthY + t * ((idealTop + idealH) - idealMouthY);
+    }
+
+    // 強度ブレンド（strength=1で完全変形）
+    tgt[i].y = p.y + (newY - p.y) * strength;
+
+    // X方向：顔の横幅は変えない（今後の改善余地あり）
+  }
+
+  return tgt;
+}
+
+// ============================================================
+// ワープ（Delaunay + アフィン逆変換）
+// ============================================================
+async function warpImage(srcData, srcLms, dstLms, W, H) {
+  // 結果バッファ（元画像でフィル）
+  var result = new ImageData(W, H);
+  result.data.set(srcData.data);
+
+  // 使用するランドマークを選択（間引き）
+  // stride=3で間引き＋重要点を追加（前回はstrideが大きすぎた）
+  var used = [];
+  for (var i = 0; i < srcLms.length; i += 3) used.push(i);
+  // 必ず含める重要点
+  Object.values(KP).forEach(function(idx) {
+    if (idx < srcLms.length && used.indexOf(idx) === -1) used.push(idx);
+  });
+
+  // 四隅のコーナーを追加（背景が崩れないようにする）
+  // ※これが重要！コーナー点がないと三角分割が顔外まで影響する
+  var corners = [
+    {x:0,y:0},{x:W/2,y:0},{x:W,y:0},
+    {x:0,y:H/2},{x:W,y:H/2},
+    {x:0,y:H},{x:W/2,y:H},{x:W,y:H},
+  ];
+  var baseLen = srcLms.length;
+  // コーナーをsrcLms・dstLmsに追加（変形なし）
+  var extSrc = used.map(function(i){ return srcLms[i]; }).concat(corners);
+  var extDst = used.map(function(i){ return dstLms[i]; }).concat(corners); // コーナーは変形なし
+
+  // dstPtsでDelaunay三角分割
+  var tris = delaunay(extDst);
+
+  var src = srcData.data;
+  var dst = result.data;
+
+  // チャンク処理（UIブロック防止）
+  var CHUNK = 15;
+  for (var ti = 0; ti < tris.length; ti += CHUNK) {
+    for (var tj = ti; tj < Math.min(ti+CHUNK, tris.length); tj++) {
+      processTriangle(tris[tj], extSrc, extDst, src, dst, W, H);
+    }
+    setProg(65 + (ti / tris.length) * 28);
+    await sleep(0);
+  }
+
+  return result;
+}
+
+// 1三角形のラスタライズ（逆マッピング）
+function processTriangle(tri, srcPts, dstPts, src, dst, W, H) {
+  var i0=tri[0], i1=tri[1], i2=tri[2];
+  var s0=srcPts[i0], s1=srcPts[i1], s2=srcPts[i2];
+  var d0=dstPts[i0], d1=dstPts[i1], d2=dstPts[i2];
+
+  // dst三角形のBB
+  var minX = Math.max(0, Math.floor(Math.min(d0.x, d1.x, d2.x)));
+  var minY = Math.max(0, Math.floor(Math.min(d0.y, d1.y, d2.y)));
+  var maxX = Math.min(W-1, Math.ceil(Math.max(d0.x, d1.x, d2.x)));
+  var maxY = Math.min(H-1, Math.ceil(Math.max(d0.y, d1.y, d2.y)));
+
+  // dst→src の逆アフィン行列を計算
+  // dst上の点(px,py) → src上の点(sx,sy) = M * [px,py,1]^T
+  var dx0=d1.x-d0.x, dy0=d1.y-d0.y;
+  var dx1=d2.x-d0.x, dy1=d2.y-d0.y;
+  var det = dx0*dy1 - dx1*dy0;
+  if (Math.abs(det) < 0.1) return; // 縮退三角形はスキップ
+
+  var sx0=s1.x-s0.x, sy0=s1.y-s0.y;
+  var sx1=s2.x-s0.x, sy1=s2.y-s0.y;
+
+  // 逆行列の係数（dst→src）
+  var a11 = sx0*dy1 - sx1*dy0;
+  var a12 = sx1*dx0 - sx0*dx1;
+  var a21 = sy0*dy1 - sy1*dy0;
+  var a22 = sy1*dx0 - sy0*dx1;
+
+  for (var py = minY; py <= maxY; py++) {
+    for (var px = minX; px <= maxX; px++) {
+      // dst三角形内か判定（重心座標）
+      var ex = px - d0.x, ey = py - d0.y;
+      var u = (ex*dy1 - ey*dx1) / det;
+      var v = (ey*dx0 - ex*dy0) / det;
+      if (u < 0 || v < 0 || u+v > 1) continue;
+
+      // 対応するsrc座標
+      var sx = s0.x + (a11*ex + a12*ey) / det;
+      var sy = s0.y + (a21*ex + a22*ey) / det;
+
+      if (sx < 0 || sx > W-1 || sy < 0 || sy > H-1) continue;
+
+      // バイリニア補間
+      var fx = Math.floor(sx), fy = Math.floor(sy);
+      var tx = sx - fx, ty = sy - fy;
+      if (fx >= W-1) { fx = W-2; tx = 1; }
+      if (fy >= H-1) { fy = H-2; ty = 1; }
+
+      var i00 = (fy*W + fx)*4;
+      var i10 = i00 + 4;
+      var i01 = i00 + W*4;
+      var i11 = i01 + 4;
+      var di  = (py*W + px)*4;
+
+      var w00=(1-tx)*(1-ty), w10=tx*(1-ty), w01=(1-tx)*ty, w11=tx*ty;
+
+      for (var c = 0; c < 3; c++) {
+        var warped = src[i00+c]*w00 + src[i10+c]*w10 + src[i01+c]*w01 + src[i11+c]*w11;
+        // 強度ブレンドはcalcTarget側で処理済みなので、ここでは純粋にワープ結果を使う
+        dst[di+c] = Math.round(warped);
+      }
+      dst[di+3] = 255;
+    }
+  }
+}
+
+// ============================================================
+// Delaunay三角分割（Bowyer-Watson法）
+// ============================================================
+function delaunay(pts) {
+  // スーパー三角形（全点を囲む巨大三角形）
+  var minX=Infinity, minY=Infinity, maxX=-Infinity, maxY=-Infinity;
+  pts.forEach(function(p){
+    if(p.x<minX) minX=p.x; if(p.y<minY) minY=p.y;
+    if(p.x>maxX) maxX=p.x; if(p.y>maxY) maxY=p.y;
+  });
+  var dx=(maxX-minX)*3, dy=(maxY-minY)*3;
+  var mx=(minX+maxX)/2, my=(minY+maxY)/2;
+  var ST = [
+    {x:mx-dx*2, y:my-dy*2},
+    {x:mx,      y:my+dy*2},
+    {x:mx+dx*2, y:my-dy*2},
+  ];
+  var allPts = pts.concat(ST);
+  var N = pts.length;
+  var triList = [[N, N+1, N+2]]; // スーパー三角形
+
+  for (var pi = 0; pi < N; pi++) {
+    var p = allPts[pi];
+    var bad = [];
+    // この点の外接円内にある三角形を収集
+    for (var ti = 0; ti < triList.length; ti++) {
+      var t = triList[ti];
+      var cc = circumcircle(allPts[t[0]], allPts[t[1]], allPts[t[2]]);
+      if (cc && dist2(p.x, p.y, cc.cx, cc.cy) < cc.r2) {
+        bad.push(ti);
+      }
+    }
+    // 境界ポリゴンを求める
+    var poly = [];
+    for (var bi = 0; bi < bad.length; bi++) {
+      var bt = triList[bad[bi]];
+      var edges = [[bt[0],bt[1]],[bt[1],bt[2]],[bt[2],bt[0]]];
+      for (var ei = 0; ei < 3; ei++) {
+        var e = edges[ei];
+        var shared = false;
+        for (var bj = 0; bj < bad.length; bj++) {
+          if (bj === bi) continue;
+          var ot = triList[bad[bj]];
+          if ((ot[0]===e[0]||ot[1]===e[0]||ot[2]===e[0]) &&
+              (ot[0]===e[1]||ot[1]===e[1]||ot[2]===e[1])) {
+            shared = true; break;
+          }
+        }
+        if (!shared) poly.push(e);
+      }
+    }
+    // bad三角形を削除
+    triList = triList.filter(function(_, i){ return bad.indexOf(i)===-1; });
+    // 新しい三角形を追加
+    for (var ei = 0; ei < poly.length; ei++) {
+      triList.push([poly[ei][0], poly[ei][1], pi]);
+    }
+  }
+
+  // スーパー三角形の頂点を含む三角形を除去
+  triList = triList.filter(function(t){
+    return t[0]<N && t[1]<N && t[2]<N;
+  });
+
+  return triList;
+}
+
+function circumcircle(a, b, c) {
+  var ax=a.x, ay=a.y, bx=b.x, by=b.y, cx=c.x, cy=c.y;
+  var D = 2*(ax*(by-cy)+bx*(cy-ay)+cx*(ay-by));
+  if (Math.abs(D) < 1e-8) return null;
+  var ux = ((ax*ax+ay*ay)*(by-cy)+(bx*bx+by*by)*(cy-ay)+(cx*cx+cy*cy)*(ay-by))/D;
+  var uy = ((ax*ax+ay*ay)*(cx-bx)+(bx*bx+by*by)*(ax-cx)+(cx*cx+cy*cy)*(bx-ax))/D;
+  return { cx:ux, cy:uy, r2:dist2(ax,ay,ux,uy) };
+}
+
+function dist2(x1,y1,x2,y2) { return (x1-x2)*(x1-x2)+(y1-y2)*(y1-y2); }
+
+// ============================================================
+// 統計・診断
+// ============================================================
+function calcStats(lm, W, H) {
+  var fH = lm[KP.faceBot].y - lm[KP.faceTop].y;
+  var fW = lm[KP.faceR].x   - lm[KP.faceL].x;
+  var faceRatio = fH / fW;
+
+  var eyeSpan = lm[KP.eyeRO].x - lm[KP.eyeLO].x;
+  var eyeRatio = eyeSpan / fW;
+
+  var lowFace = lm[KP.faceBot].y - lm[KP.noseTip].y;
+  var lowRatio = lowFace / fH;
+
+  // 黄金比スコア（顔縦横比がPHIにどれだけ近いか）
+  var goldScore = Math.max(0, 100 - Math.abs(faceRatio - PHI) * 60);
+  return { faceRatio, eyeRatio, lowRatio, goldScore };
+}
+
+function showStats(s) {
+  var p = document.getElementById('stats');
+  p.classList.add('show');
+  function cls(v, lo, hi) { return v>=lo && v<=hi ? 'sv g' : v>=lo*0.9 && v<=hi*1.1 ? 'sv m' : 'sv b'; }
+  setStatEl('sFace',  s.faceRatio.toFixed(3), cls(s.faceRatio, 1.4, 1.8));
+  setStatEl('sEye',   s.eyeRatio.toFixed(3),  cls(s.eyeRatio,  0.55, 0.65));
+  setStatEl('sLow',   (s.lowRatio*100).toFixed(1)+'%', 'sv m');
+  setStatEl('sScore', Math.round(s.goldScore)+' / 100', s.goldScore>=70?'sv g':s.goldScore>=50?'sv m':'sv b');
+}
+function setStatEl(id, txt, cls) {
+  var el = document.getElementById(id);
+  el.textContent = txt; el.className = cls;
+}
+
+function showDiag(s) {
+  var el = document.getElementById('diag');
+  el.classList.add('show');
+  var tR = ratio==='gold' ? PHI : SQ2;
+  var tN = ratio==='gold' ? '黄金比（1.618）' : '白銀比（1.414）';
+  var sc = Math.round(s.goldScore);
+  var dir = s.faceRatio > tR ? 'やや縦長' : 'やや横広め';
+  el.innerHTML =
+    '📊 <strong>分析結果</strong><br><br>' +
+    '顔の縦横比 <strong>'+s.faceRatio.toFixed(3)+'</strong> ／ ' +
+    tN+' <strong>'+tR.toFixed(3)+'</strong><br>' +
+    dir+'な傾向。黄金比スコア <strong>'+sc+'点</strong>。<br><br>' +
+    (sc>=70 ? '✨ 理想的な比率に近いです！' :
+     sc>=50 ? '「比較」ボタンで変換前後を見てみましょう。' :
+              '変換効果が顕著に現れます。比較ボタンで確認してください！');
+}
+
+// ============================================================
+// 表示切替
+// ============================================================
+function showView(type) {
+  curView = type;
+  updCmp(type);
+  var rc = document.getElementById('rc');
+  var ctx = rc.getContext('2d');
+  var W = photo.naturalWidth, H = photo.naturalHeight;
+
+  if (type === 'side') {
+    rc.width = W*2; rc.height = H;
+    ctx.drawImage(photo, 0, 0);
+    if (warpData) ctx.putImageData(warpData, W, 0);
+    // ラベル
+    ctx.fillStyle = 'rgba(0,0,0,.55)';
+    ctx.fillRect(0,0,W,30); ctx.fillRect(W,0,W,30);
+    ctx.fillStyle='#fff'; ctx.font='bold 15px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('元の顔', W/2, 21);
+    ctx.fillText('変換後', W+W/2, 21);
+  } else {
+    rc.width = W; rc.height = H;
+    if (type==='orig') {
+      ctx.drawImage(photo, 0, 0);
+    } else {
+      if (warpData) ctx.putImageData(warpData, 0, 0);
+    }
+  }
+}
+
+function updCmp(v) {
+  document.getElementById('cOrig').className = 'cmp-btn'+(v==='orig'?' on':'');
+  document.getElementById('cWarp').className = 'cmp-btn'+(v==='warp'?' on':'');
+  document.getElementById('cSide').className = 'cmp-btn'+(v==='side'?' on':'');
+}
+
+// ============================================================
+// 保存
+// ============================================================
+function saveImg() {
+  var rc = document.getElementById('rc');
+  var url = rc.toDataURL('image/png');
+  if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+    var w = window.open('','_blank');
+    if (w) { w.document.write('<img src="'+url+'" style="max-width:100%"><p style="padding:10px;font-family:sans-serif;color:#666">長押しして保存</p>'); w.document.close(); }
+  } else {
+    var a = document.createElement('a');
+    a.download = 'facewarp_'+Date.now()+'.png'; a.href = url; a.click();
+  }
+}
+
+// ============================================================
+// UI ヘルパー
+// ============================================================
+function st(msg, type) {
+  var el = document.getElementById('stbox');
+  el.textContent = msg;
+  el.className = 'stbox show ' + (type||'info');
+}
+function setProg(pct, show) {
+  var bar = document.getElementById('prog');
+  if (show !== undefined) { if(show) bar.classList.add('show'); else { bar.classList.remove('show'); return; } }
+  document.getElementById('progFill').style.width = pct + '%';
+}
+
+// 起動時にFaceMeshをプリロード
+window.addEventListener('load', function() {
+  // FaceMeshは写真選択後に初期化（重いため）
+});
+</script>
+</body>
+</html>
