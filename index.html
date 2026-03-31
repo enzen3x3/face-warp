@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>FACEratio SHADE</title>
+<title>FACEratio TRANSFORM</title>
 <style>
 :root{
   --bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a28;--border:#2a2a3f;
-  --gold:#c8a96e;--gold2:#e8c88e;--silver:#8ab0c0;
+  --gold:#c8a96e;--gold2:#e8c88e;--silver:#8ab0c0;--silver2:#b0d0e0;
   --text:#e8e0d0;--text2:#8a7a6a;--text3:#3a3a4a;
   --accent:#e87858;--green:#58c888;
 }
@@ -15,75 +15,59 @@
 body{background:var(--bg);color:var(--text);font-family:'Hiragino Sans','Yu Gothic',sans-serif;min-height:100vh;}
 .app{max-width:480px;margin:0 auto;padding:0 0 80px;}
 
-header{padding:28px 20px 20px;text-align:center;border-bottom:1px solid var(--border);}
-.logo{font-size:9px;letter-spacing:7px;color:var(--gold);margin-bottom:8px;}
-header h1{font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--gold2),var(--gold),var(--accent));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;}
+header{padding:26px 20px 18px;text-align:center;border-bottom:1px solid var(--border);}
+.logo{font-size:9px;letter-spacing:7px;color:var(--gold);margin-bottom:6px;}
+header h1{font-size:21px;font-weight:900;background:linear-gradient(135deg,var(--gold2),var(--gold),var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:5px;}
 header p{font-size:11px;color:var(--text2);line-height:1.7;}
 
-.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;margin:12px 14px;overflow:hidden;}
-.card-head{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
-.num{width:24px;height:24px;border-radius:50%;background:var(--border);color:var(--text2);
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;margin:10px 14px;overflow:hidden;}
+.card-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.num{width:22px;height:22px;border-radius:50%;background:var(--border);color:var(--text2);
   font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s;}
 .num.done{background:var(--gold);color:#000;}
 .card-head h2{font-size:13px;font-weight:700;}
-.card-body{padding:14px;}
+.card-body{padding:13px;}
 
-.upload-area{border:2px dashed var(--border);border-radius:12px;padding:22px 14px;text-align:center;
-  cursor:pointer;background:var(--surface2);display:flex;flex-direction:column;align-items:center;gap:6px;}
+.upload-area{border:2px dashed var(--border);border-radius:12px;padding:20px 14px;text-align:center;
+  cursor:pointer;background:var(--surface2);display:flex;flex-direction:column;align-items:center;gap:5px;}
 .upload-area.loaded{border-style:solid;border-color:var(--gold);}
-.upload-area .icon{font-size:30px;}
-.upload-area .label{font-size:13px;color:var(--text2);}
+.upload-area .icon{font-size:28px;}
+.upload-area .label{font-size:12px;color:var(--text2);}
 .upload-area .sub{font-size:10px;color:var(--text3);}
 input[type=file]{display:none;}
 
 .btn-row{display:flex;gap:8px;margin-top:8px;}
-.btn-cam{flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--border);
-  background:var(--surface2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;}
+.btn-cam{flex:1;padding:9px;border-radius:10px;border:1.5px solid var(--border);
+  background:var(--surface2);color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;}
 #camSection{display:none;margin-top:8px;}
 #camVideo{display:block;width:100%;border-radius:10px;background:#000;}
 .cam-btns{display:flex;gap:6px;margin-top:6px;}
-.cam-btns button{flex:1;padding:9px;border-radius:9px;border:none;font-size:11px;font-weight:700;cursor:pointer;}
+.cam-btns button{flex:1;padding:8px;border-radius:8px;border:none;font-size:11px;font-weight:700;cursor:pointer;}
 .cam-shoot{background:linear-gradient(135deg,var(--gold),var(--accent));color:#000;}
 .cam-switch,.cam-cancel{background:var(--surface2);border:1.5px solid var(--border)!important;color:var(--text2);}
 
-/* 比率 */
 .ratio-switch{display:flex;gap:8px;}
-.ratio-btn{flex:1;padding:14px 8px;border-radius:12px;border:2px solid var(--border);
+.ratio-btn{flex:1;padding:13px 8px;border-radius:12px;border:2px solid var(--border);
   background:var(--surface2);cursor:pointer;text-align:center;transition:all .2s;}
 .ratio-btn.active-gold{border-color:var(--gold);background:rgba(200,169,110,.08);}
 .ratio-btn.active-silver{border-color:var(--silver);background:rgba(138,176,192,.08);}
-.ratio-btn .name{font-size:14px;font-weight:800;}
-.ratio-btn .num2{font-size:10px;color:var(--text2);margin-top:3px;}
-.ratio-btn .desc{font-size:9px;color:var(--text3);margin-top:2px;}
-.ratio-btn.active-gold .name{color:var(--gold2);}
-.ratio-btn.active-silver .name{color:var(--silver);}
+.ratio-btn .rname{font-size:14px;font-weight:800;}
+.ratio-btn .rnum{font-size:10px;color:var(--text2);margin-top:3px;}
+.ratio-btn .rdesc{font-size:9px;color:var(--text3);margin-top:2px;}
+.ratio-btn.active-gold .rname{color:var(--gold2);}
+.ratio-btn.active-silver .rname{color:var(--silver2);}
 
-/* スライダー群 */
-.sliders{display:flex;flex-direction:column;gap:10px;margin-top:12px;}
-.slider-wrap{display:flex;align-items:center;gap:10px;}
-.slider-wrap label{font-size:11px;color:var(--text2);white-space:nowrap;width:90px;}
+.slider-wrap{display:flex;align-items:center;gap:10px;margin-top:11px;}
+.slider-wrap label{font-size:11px;color:var(--text2);white-space:nowrap;width:70px;}
 input[type=range]{flex:1;accent-color:var(--gold);}
 .slval{font-size:11px;color:var(--text2);width:32px;text-align:right;}
 
-/* トグル */
-.toggle-group{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
-.toggle-row{display:flex;align-items:center;gap:10px;}
-.tog{width:34px;height:18px;background:var(--border);border-radius:9px;cursor:pointer;
-  position:relative;transition:background .2s;flex-shrink:0;}
-.tog.on{background:var(--gold);}
-.tog::after{content:'';position:absolute;width:12px;height:12px;background:#fff;
-  border-radius:50%;top:3px;left:3px;transition:left .2s;}
-.tog.on::after{left:19px;}
-.toggle-row label{font-size:11px;color:var(--text2);}
-
-/* ボタン */
 .btn-primary{width:100%;padding:14px;border:none;border-radius:13px;
   background:linear-gradient(135deg,var(--gold),var(--accent));
   color:#000;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:8px;}
 .btn-primary:disabled{opacity:.4;cursor:not-allowed;}
 
-/* ステータス */
 .stbox{padding:10px 14px;border-radius:10px;font-size:12px;text-align:center;display:none;margin-bottom:8px;}
 .stbox.show{display:block;}
 .stbox.ok{background:rgba(88,200,136,.1);border:1px solid rgba(88,200,136,.3);color:var(--green);}
@@ -94,48 +78,41 @@ input[type=range]{flex:1;accent-color:var(--gold);}
 .prog.show{display:block;}
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--accent));border-radius:3px;transition:width .3s;}
 
-/* 結果 */
 .result-box{background:#000;border-radius:12px;overflow:hidden;min-height:180px;
   display:flex;align-items:center;justify-content:center;}
 canvas{display:block;width:100%;}
-.ph{padding:32px 16px;text-align:center;color:var(--text3);font-size:11px;line-height:2;}
-.ph span{font-size:32px;display:block;margin-bottom:6px;}
+.ph{padding:30px 16px;text-align:center;color:var(--text3);font-size:11px;line-height:2;}
+.ph span{font-size:30px;display:block;margin-bottom:6px;}
 
-/* 比較ボタン */
 .cmp-btns{display:none;gap:6px;margin-bottom:10px;}
 .cmp-btn{flex:1;padding:7px 4px;border:1.5px solid var(--border);border-radius:9px;
   background:var(--surface2);color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;}
 .cmp-btn.on{border-color:var(--gold);color:var(--gold);background:rgba(200,169,110,.08);}
 
 .btn-row2{display:none;gap:8px;margin-top:8px;}
-.btn-sub{flex:1;padding:11px;border:1.5px solid var(--border);border-radius:11px;
+.btn-sub{flex:1;padding:10px;border:1.5px solid var(--border);border-radius:10px;
   background:var(--surface2);color:var(--text2);font-size:12px;cursor:pointer;}
 
-/* 分析パネル */
-.analysis{margin-top:12px;display:none;}
-.analysis.show{display:block;}
-.analysis-title{font-size:12px;font-weight:700;color:var(--gold);margin-bottom:8px;padding-left:2px;}
-.parts-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
-.part-card{padding:10px 12px;background:var(--surface2);border-radius:10px;border:1px solid var(--border);}
-.part-name{font-size:10px;color:var(--text2);margin-bottom:4px;}
-.part-bar-wrap{height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
-.part-bar{height:100%;border-radius:2px;transition:width .6s;}
-.part-bar.shade{background:linear-gradient(90deg,#4a3060,#8a50a0);}
-.part-bar.hl{background:linear-gradient(90deg,var(--gold),#fff8e0);}
-.part-val{font-size:9px;color:var(--text3);margin-top:3px;text-align:right;}
-
-.advice-box{margin-top:10px;padding:12px 14px;background:rgba(200,169,110,.05);
-  border:1px solid rgba(200,169,110,.2);border-radius:11px;font-size:11px;
-  color:var(--text);line-height:1.9;}
+.stats{margin-top:10px;padding:12px 14px;background:var(--surface2);border-radius:11px;
+  border:1px solid var(--border);display:none;}
+.stats.show{display:block;}
+.stat{display:flex;justify-content:space-between;align-items:center;
+  padding:4px 0;border-bottom:1px solid var(--border);font-size:11px;}
+.stat:last-child{border:none;}
+.sl{color:var(--text2);}
+.sv{font-weight:700;}
+.sv.g{color:var(--green);}
+.sv.m{color:var(--gold);}
+.sv.b{color:var(--accent);}
 </style>
 </head>
 <body>
 <div class="app">
 
 <header>
-  <div class="logo">FACERATIO SHADE</div>
-  <h1>シェーディング提案</h1>
-  <p>黄金比との差分から<br>シェーディング＆ハイライトを自動合成</p>
+  <div class="logo">FACERATIO TRANSFORM</div>
+  <h1>美人・かわいい顔に変換</h1>
+  <p>黄金比・白銀比に基づき<br>パーツ位置を自動調整 ＋ シェーディング合成</p>
 </header>
 
 <!-- STEP 1 -->
@@ -149,12 +126,12 @@ canvas{display:block;width:100%;}
     </div>
     <input type="file" id="photoIn" accept="image/*">
     <div class="btn-row">
-      <button class="btn-cam" onclick="startCam()">📷 カメラで撮影</button>
+      <button class="btn-cam" onclick="startCam()">📷 カメラ撮影</button>
     </div>
     <div id="camSection">
       <video id="camVideo" playsinline muted></video>
       <div class="cam-btns">
-        <button class="cam-switch" onclick="switchCam()">🔄 切替</button>
+        <button class="cam-switch" onclick="switchCam()">🔄</button>
         <button class="cam-shoot" onclick="shootCam()">⬤ 撮影</button>
         <button class="cam-cancel" onclick="stopCam()">✕</button>
       </div>
@@ -164,81 +141,62 @@ canvas{display:block;width:100%;}
 
 <!-- STEP 2 -->
 <div class="card">
-  <div class="card-head"><div class="num" id="n2">2</div><h2>目標の比率と強度</h2></div>
+  <div class="card-head"><div class="num" id="n2">2</div><h2>比率と強度を選ぶ</h2></div>
   <div class="card-body">
     <div class="ratio-switch">
       <div class="ratio-btn active-gold" id="btnG" onclick="setRatio('gold')">
-        <div class="name">✨ 黄金比</div>
-        <div class="num2">1 : 1.618</div>
-        <div class="desc">大人・美人顔</div>
+        <div class="rname">✨ 黄金比</div>
+        <div class="rnum">1 : 1.618</div>
+        <div class="rdesc">美人・大人顔</div>
       </div>
       <div class="ratio-btn" id="btnS" onclick="setRatio('silver')">
-        <div class="name">🌸 白銀比</div>
-        <div class="num2">1 : 1.414</div>
-        <div class="desc">かわいい・若顔</div>
+        <div class="rname">🌸 白銀比</div>
+        <div class="rnum">1 : 1.414</div>
+        <div class="rdesc">かわいい・若顔</div>
       </div>
     </div>
-    <div class="sliders">
-      <div class="slider-wrap">
-        <label>シェーディング</label>
-        <input type="range" id="shadeSlider" min="0" max="100" value="60" oninput="updateSlider('shade',this.value)">
-        <span class="slval" id="shadeVal">60%</span>
-      </div>
-      <div class="slider-wrap">
-        <label>ハイライト</label>
-        <input type="range" id="hlSlider" min="0" max="100" value="50" oninput="updateSlider('hl',this.value)">
-        <span class="slval" id="hlVal">50%</span>
-      </div>
-      <div class="slider-wrap">
-        <label>ぼかし</label>
-        <input type="range" id="blurSlider" min="0" max="100" value="70" oninput="updateSlider('blur',this.value)">
-        <span class="slval" id="blurVal">70%</span>
-      </div>
+    <div class="slider-wrap">
+      <label>変換強度</label>
+      <input type="range" id="strSlider" min="0" max="100" value="60" oninput="setStr(this.value)">
+      <span class="slval" id="strVal">60%</span>
     </div>
-    <div class="toggle-group">
-      <div class="toggle-row">
-        <div class="tog on" id="togShade" onclick="toggleOpt('shade')"></div>
-        <label>シェーディングを入れる（小顔・引き締め）</label>
-      </div>
-      <div class="toggle-row">
-        <div class="tog on" id="togHL" onclick="toggleOpt('hl')"></div>
-        <label>ハイライトを入れる（立体感・艶）</label>
-      </div>
-      <div class="toggle-row">
-        <div class="tog on" id="togGuide" onclick="toggleOpt('guide')"></div>
-        <label>ガイドライン表示</label>
-      </div>
+    <div class="slider-wrap">
+      <label>シェーディング</label>
+      <input type="range" id="shSlider" min="0" max="100" value="50" oninput="setSh(this.value)">
+      <span class="slval" id="shVal">50%</span>
     </div>
   </div>
 </div>
 
 <!-- STEP 3 -->
 <div class="card">
-  <div class="card-head"><div class="num" id="n3">3</div><h2>シェーディングを適用</h2></div>
+  <div class="card-head"><div class="num" id="n3">3</div><h2>変換する</h2></div>
   <div class="card-body">
-    <button class="btn-primary" id="applyBtn" onclick="doApply()" disabled>✨ シェーディングを適用</button>
+    <button class="btn-primary" id="goBtn" onclick="doTransform()" disabled>✨ 変換する</button>
     <div class="stbox info show" id="stbox">写真を選択してください</div>
     <div class="prog" id="prog"><div class="prog-fill" id="progFill" style="width:0"></div></div>
 
     <div class="cmp-btns" id="cmpBtns">
-      <button class="cmp-btn on" id="cOrig" onclick="showView('orig')">元の顔</button>
-      <button class="cmp-btn" id="cShade" onclick="showView('shade')">合成後</button>
-      <button class="cmp-btn" id="cSide" onclick="showView('side')">比較</button>
+      <button class="cmp-btn on" id="cO" onclick="showView('orig')">元の顔</button>
+      <button class="cmp-btn"    id="cT" onclick="showView('trans')">変換後</button>
+      <button class="cmp-btn"    id="cS" onclick="showView('side')">比較</button>
     </div>
 
     <div class="result-box">
-      <div class="ph" id="ph"><span>✨</span>写真を選択して<br>「シェーディングを適用」をタップ</div>
+      <div class="ph" id="ph"><span>✨</span>写真を選択して<br>「変換する」をタップ</div>
       <canvas id="rc" style="display:none"></canvas>
     </div>
 
-    <div class="analysis" id="analysis">
-      <div class="analysis-title">📊 部位別シェーディング量</div>
-      <div class="parts-grid" id="partsGrid"></div>
-      <div class="advice-box" id="adviceBox"></div>
+    <div class="stats" id="stats">
+      <div class="stat"><span class="sl">顔の縦横比（現在）</span><span class="sv" id="sFR">--</span></div>
+      <div class="stat"><span class="sl">目の位置（三分割）</span><span class="sv" id="sEP">--</span></div>
+      <div class="stat"><span class="sl">目の間隔比</span><span class="sv" id="sEI">--</span></div>
+      <div class="stat"><span class="sl">鼻の長さ比</span><span class="sv" id="sNL">--</span></div>
+      <div class="stat"><span class="sl">口の位置比</span><span class="sv" id="sMO">--</span></div>
     </div>
 
     <div class="btn-row2" id="saveRow">
-      <button class="btn-sub" onclick="doApply()">↩ 再適用</button>
+      <button class="btn-sub" onclick="doTransform()">↩ 再変換</button>
       <button class="btn-sub" onclick="saveImg()">💾 保存</button>
     </div>
   </div>
@@ -254,108 +212,96 @@ canvas{display:block;width:100%;}
 var PHI = 1.6180339887;
 var SQ2 = Math.SQRT2;
 
+// 主要ランドマーク
 var KP = {
-  faceTop:10, faceBot:152, faceL:234, faceR:454,
-  eyeLO:33,  eyeLI:133,  eyeRO:263, eyeRI:362,
-  eyeLC:468, eyeRC:473,
-  noseTip:4, noseRoot:168, noseBridge:6,
+  // 顔輪郭（この点は変形しない）
+  OVAL: [10,338,297,332,284,251,389,356,454,323,361,288,
+         397,365,379,378,400,377,152,148,176,149,150,136,
+         172,58,132,93,234,127,162,21,54,103,67,109],
+  // 顔境界
+  fTop:10, fBot:152, fL:234, fR:454,
+  // 眉毛
+  browLL:70, browLR:107, browRL:336, browRR:296,
+  browLC:105, browRC:334,   // 眉中心
+  // 目
+  eyeLT:159, eyeLB:145, eyeLO:33, eyeLI:133,
+  eyeRT:386, eyeRB:374, eyeRO:263, eyeRI:362,
+  eyeLC:468, eyeRC:473,   // refined center
+  // 鼻
+  noseRoot:168, noseBridge:6, noseTip:4,
   noseL:129, noseR:358,
+  noseBotL:98, noseBotR:327,
+  // 口
   mouthL:61, mouthR:291, mouthT:0, mouthB:17,
-  chin:175,
-  // 顔輪郭（左側）
-  jawL: [234,227,116,123,147,213,192,214,210,211,212],
-  // 顔輪郭（右側）
-  jawR: [454,447,345,352,376,433,416,434,430,431,432],
-  // あごライン
-  jawBot: [152,148,176,149,150,136,172,58,132,93,234,454,323,361,288,397,365,379,378,400,377],
-  // 鼻筋
-  noseBridgeLine: [168,6,197,195,5,4],
-  // 額中央
-  foreheadC: [10,151,9,8,107,66,105,63,70],
-  // 頬骨（ハイライト）
-  cheekL: [116,117,118,119,120,121,128,245,244,243,242,241,240,239],
-  cheekR: [345,346,347,348,349,350,357,465,464,463,462,461,460,459],
+  mouthTU:13, mouthBL:14,  // 上唇・下唇中央
+  // 頬・輪郭
+  cheekL:50, cheekR:280,
+  chin:175, jawBotL:172, jawBotR:397,
+  // 髪の生え際
+  hairL:127, hairR:356, hairC:10,
 };
 
-// 顔輪郭全体のインデックス
-var FACE_OVAL = [
-  10,338,297,332,284,251,389,356,454,323,361,288,
-  397,365,379,378,400,377,152,148,176,149,150,136,
-  172,58,132,93,234,127,162,21,54,103,67,109
-];
+// 変形させない輪郭点のセット
+var OVAL_SET = new Set(KP.OVAL);
 
 // ============================================================
 // 状態
 // ============================================================
-var photo     = null;
-var ratio     = 'gold';
-var shadeStr  = 0.6;
-var hlStr     = 0.5;
-var blurStr   = 0.7;
-var useShade  = true;
-var useHL     = true;
-var useGuide  = true;
-var lms       = null;
-var resultData= null;
-var curView   = 'shade';
-var faceMesh  = null;
-var fmReady   = false;
-var fmCb      = null;
-var camStream = null;
-var camFacing = 'user';
+var photo=null, ratio='gold', strength=0.6, shadeStr=0.5;
+var lms=null, resultCanvas=null, curView='trans';
+var faceMesh=null, fmReady=false, fmCb=null;
+var camStream=null, camFacing='user';
 
 // ============================================================
 // FaceMesh
 // ============================================================
-function initFM() {
-  if (faceMesh) return;
-  st('顔検出エンジンをロード中…', 'info');
-  try {
-    faceMesh = new FaceMesh({
-      locateFile: function(f){ return 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/' + f; }
-    });
-    faceMesh.setOptions({ maxNumFaces:1, refineLandmarks:true, minDetectionConfidence:0.4, minTrackingConfidence:0.4 });
-    faceMesh.onResults(function(res){ if(fmCb){ fmCb(res); fmCb=null; } });
+function initFM(){
+  if(faceMesh) return;
+  st('顔検出エンジンをロード中…','info');
+  try{
+    faceMesh=new FaceMesh({locateFile:function(f){return 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/'+f;}});
+    faceMesh.setOptions({maxNumFaces:1,refineLandmarks:true,minDetectionConfidence:0.4,minTrackingConfidence:0.4});
+    faceMesh.onResults(function(res){if(fmCb){fmCb(res);fmCb=null;}});
     faceMesh.initialize().then(function(){
-      fmReady = true;
-      st('エンジン準備完了！', 'ok');
-      setTimeout(function(){ document.getElementById('stbox').classList.remove('show'); }, 1500);
-    }).catch(function(e){ st('初期化失敗: '+e.message, 'err'); });
-  } catch(e) { st('エラー: '+e.message, 'err'); }
+      fmReady=true;
+      st('準備完了！','ok');
+      setTimeout(function(){document.getElementById('stbox').classList.remove('show');},1500);
+    }).catch(function(e){st('初期化失敗: '+e.message,'err');});
+  }catch(e){st('エラー: '+e.message,'err');}
 }
 
-function detectFace(imgEl) {
-  return new Promise(function(resolve, reject) {
-    if (!fmReady) { reject(new Error('エンジン未準備')); return; }
-    var timer = setTimeout(function(){ fmCb=null; reject(new Error('タイムアウト')); }, 12000);
-    fmCb = function(res) {
-      clearTimeout(timer);
-      if (res.multiFaceLandmarks && res.multiFaceLandmarks.length > 0) resolve(res.multiFaceLandmarks[0]);
-      else reject(new Error('顔が検出できませんでした'));
+function detectFace(img){
+  return new Promise(function(resolve,reject){
+    if(!fmReady){reject(new Error('エンジン未準備'));return;}
+    var t=setTimeout(function(){fmCb=null;reject(new Error('タイムアウト'));},12000);
+    fmCb=function(res){
+      clearTimeout(t);
+      if(res.multiFaceLandmarks&&res.multiFaceLandmarks.length>0) resolve(res.multiFaceLandmarks[0]);
+      else reject(new Error('顔が検出できませんでした。正面の写真を使ってください'));
     };
-    faceMesh.send({ image: imgEl }).catch(function(e){ clearTimeout(timer); fmCb=null; reject(e); });
+    faceMesh.send({image:img}).catch(function(e){clearTimeout(t);fmCb=null;reject(e);});
   });
 }
 
 // ============================================================
 // カメラ
 // ============================================================
-async function startCam() {
-  if (camStream) { camStream.getTracks().forEach(function(t){t.stop();}); camStream=null; }
-  var cons = [{video:{facingMode:{exact:camFacing}},audio:false},{video:{facingMode:camFacing},audio:false},{video:true,audio:false}];
-  for (var c of cons) { try { camStream=await navigator.mediaDevices.getUserMedia(c); break; } catch(e){} }
-  if (!camStream) { st('カメラを起動できません', 'err'); return; }
-  var v=document.getElementById('camVideo'); v.srcObject=camStream; v.play();
+async function startCam(){
+  if(camStream){camStream.getTracks().forEach(function(t){t.stop();});camStream=null;}
+  var cs=[{video:{facingMode:{exact:camFacing}},audio:false},{video:{facingMode:camFacing},audio:false},{video:true,audio:false}];
+  for(var c of cs){try{camStream=await navigator.mediaDevices.getUserMedia(c);break;}catch(e){}}
+  if(!camStream){st('カメラ起動失敗','err');return;}
+  var v=document.getElementById('camVideo');v.srcObject=camStream;v.play();
   document.getElementById('camSection').style.display='block';
 }
-function switchCam(){ camFacing=camFacing==='user'?'environment':'user'; startCam(); }
+function switchCam(){camFacing=camFacing==='user'?'environment':'user';startCam();}
 function shootCam(){
-  var v=document.getElementById('camVideo'); if(!v.videoWidth) return;
-  var c=document.createElement('canvas'); c.width=v.videoWidth; c.height=v.videoHeight;
+  var v=document.getElementById('camVideo');if(!v.videoWidth)return;
+  var c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;
   var cx=c.getContext('2d');
   if(camFacing==='user'){cx.translate(c.width,0);cx.scale(-1,1);}
   cx.drawImage(v,0,0);
-  var img=new Image(); img.onload=function(){setPhoto(img);stopCam();}; img.src=c.toDataURL('image/jpeg',0.92);
+  var img=new Image();img.onload=function(){setPhoto(img);stopCam();};img.src=c.toDataURL('image/jpeg',0.92);
 }
 function stopCam(){
   if(camStream){camStream.getTracks().forEach(function(t){t.stop();});camStream=null;}
@@ -366,27 +312,27 @@ function stopCam(){
 // ============================================================
 // 写真
 // ============================================================
-document.getElementById('photoIn').addEventListener('change', function(e){
-  var f=e.target.files[0]; if(!f) return; e.target.value='';
+document.getElementById('photoIn').addEventListener('change',function(e){
+  var f=e.target.files[0];if(!f)return;e.target.value='';
   var r=new FileReader();
-  r.onload=function(ev){ var img=new Image(); img.onload=function(){setPhoto(img);}; img.src=ev.target.result; };
+  r.onload=function(ev){var img=new Image();img.onload=function(){setPhoto(img);};img.src=ev.target.result;};
   r.readAsDataURL(f);
 });
 
 function setPhoto(img){
-  photo=img; lms=null; resultData=null;
+  photo=img;lms=null;
   document.getElementById('n1').classList.add('done');
   var ua=document.getElementById('uploadArea');
   ua.classList.add('loaded');
-  ua.innerHTML='<span style="font-size:18px">✅</span><span style="font-size:12px;color:var(--gold)">読み込み完了（タップで変更）</span>';
-  document.getElementById('applyBtn').disabled=false;
+  ua.innerHTML='<span style="font-size:18px">✅</span><span style="font-size:12px;color:var(--gold)">読み込み完了</span>';
+  document.getElementById('goBtn').disabled=false;
   document.getElementById('cmpBtns').style.display='none';
   document.getElementById('saveRow').style.display='none';
-  document.getElementById('analysis').classList.remove('show');
+  document.getElementById('stats').classList.remove('show');
   document.getElementById('ph').style.display='block';
   document.getElementById('rc').style.display='none';
-  st('写真OK！「シェーディングを適用」を押してください', 'ok');
-  if (!faceMesh) initFM();
+  st('写真OK！「変換する」を押してください','ok');
+  if(!faceMesh)initFM();
 }
 
 function setRatio(r){
@@ -394,60 +340,56 @@ function setRatio(r){
   document.getElementById('btnG').className='ratio-btn'+(r==='gold'?' active-gold':'');
   document.getElementById('btnS').className='ratio-btn'+(r==='silver'?' active-silver':'');
 }
-function updateSlider(type, v){
-  var val=parseInt(v)/100;
-  if(type==='shade') shadeStr=val;
-  else if(type==='hl') hlStr=val;
-  else blurStr=val;
-  document.getElementById(type+'Val').textContent=v+'%';
-}
-function toggleOpt(type){
-  if(type==='shade'){ useShade=!useShade; document.getElementById('togShade').className='tog'+(useShade?' on':''); }
-  else if(type==='hl'){ useHL=!useHL; document.getElementById('togHL').className='tog'+(useHL?' on':''); }
-  else { useGuide=!useGuide; document.getElementById('togGuide').className='tog'+(useGuide?' on':''); }
-}
+function setStr(v){strength=parseInt(v)/100;document.getElementById('strVal').textContent=v+'%';}
+function setSh(v){shadeStr=parseInt(v)/100;document.getElementById('shVal').textContent=v+'%';}
 
 // ============================================================
-// メイン処理
+// メイン変換処理
 // ============================================================
-async function doApply(){
-  if (!photo) { st('写真を先に選択してください','err'); return; }
-  document.getElementById('applyBtn').disabled=true;
+async function doTransform(){
+  if(!photo){st('写真を選択してください','err');return;}
+  document.getElementById('goBtn').disabled=true;
   setProg(0,true);
 
-  try {
-    if (!fmReady) {
-      if (!faceMesh) initFM();
+  try{
+    // エンジン待機
+    if(!fmReady){
+      if(!faceMesh)initFM();
       st('エンジン起動中…','info');
-      for (var i=0;i<30;i++){ await sleep(500); if(fmReady) break; }
-      if (!fmReady) throw new Error('エンジンの起動に失敗しました');
+      for(var i=0;i<30;i++){await sleep(500);if(fmReady)break;}
+      if(!fmReady)throw new Error('エンジン起動失敗。再度押してください');
     }
 
-    st('顔を検出中…','info'); setProg(20);
-    var rawLms = await detectFace(photo);
-    setProg(40);
+    // 1. 顔検出
+    st('顔を検出中…','info');setProg(15);
+    var rawLms=await detectFace(photo);
+    setProg(30);
 
     var W=photo.naturalWidth, H=photo.naturalHeight;
-    lms = rawLms.map(function(p){ return {x:p.x*W, y:p.y*H}; });
+    lms=rawLms.map(function(p){return{x:p.x*W,y:p.y*H};});
+
+    // 2. 理想ランドマーク計算（パーツ単位）
+    st('比率を計算中…','info');setProg(45);
+    var tgtLms=calcIdealLandmarks(lms,W,H);
     setProg(55);
 
-    // シェーディングマップ生成
-    st('シェーディングを計算中…','info');
+    // 3. ワープ実行（輪郭固定）
+    st('変換中…','info');
     var rc=document.getElementById('rc');
-    rc.width=W; rc.height=H;
+    rc.width=W;rc.height=H;
     var ctx=rc.getContext('2d');
-
-    // 元画像描画
     ctx.drawImage(photo,0,0);
-    setProg(65);
+    var srcData=ctx.getImageData(0,0,W,H);
+    setProg(60);
 
-    // シェーディング・ハイライト合成
-    await applyShading(ctx, lms, W, H);
-    setProg(90);
+    var warpedData=await doWarp(srcData,lms,tgtLms,W,H);
+    ctx.putImageData(warpedData,0,0);
+    setProg(82);
 
-    // ガイドライン
-    if (useGuide) drawGuides(ctx, lms, W, H);
-    setProg(100);
+    // 4. シェーディング合成
+    st('シェーディングを合成中…','info');
+    applyContourShading(ctx,lms,tgtLms,W,H);
+    setProg(96);
 
     // UI更新
     document.getElementById('ph').style.display='none';
@@ -455,356 +397,445 @@ async function doApply(){
     document.getElementById('cmpBtns').style.display='flex';
     document.getElementById('saveRow').style.display='flex';
     document.getElementById('n3').classList.add('done');
-    curView='shade'; updCmp('shade');
+    curView='trans';updCmp('trans');
 
-    showAnalysis(lms, W, H);
-    st('✨ 完成！比較ボタンで確認できます','ok');
+    showStats(lms,W,H);
+    st('✨ 変換完了！比較ボタンで確認できます','ok');
+    setProg(100);
 
-  } catch(e) { st('❌ '+e.message,'err'); }
+  }catch(e){st('❌ '+e.message,'err');}
 
   setProg(0,false);
-  document.getElementById('applyBtn').disabled=false;
+  document.getElementById('goBtn').disabled=false;
 }
 
-function sleep(ms){ return new Promise(function(r){setTimeout(r,ms);}); }
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
 
 // ============================================================
-// シェーディング・ハイライト合成
+// 理想ランドマーク計算（パーツ単位・輪郭固定）
 // ============================================================
-async function applyShading(ctx, lm, W, H) {
-  var targetR = ratio==='gold' ? PHI : SQ2;
+function calcIdealLandmarks(src,W,H){
+  var tgt=src.map(function(p){return{x:p.x,y:p.y};});
+  var R=ratio==='gold'?PHI:SQ2;
 
-  // 顔の基本情報
-  var fTop=lm[KP.faceTop].y, fBot=lm[KP.faceBot].y;
-  var fL=lm[KP.faceL].x,     fR=lm[KP.faceR].x;
+  // 顔の基準値
+  var fTop=src[KP.faceTop].y, fBot=src[KP.faceBot].y;
+  var fL=src[KP.faceL].x,     fR=src[KP.faceR].x;
   var fH=fBot-fTop, fW=fR-fL;
-  var fCX=(fL+fR)/2, fCY=(fTop+fBot)/2;
-  var curR=fH/fW;
+  var fCX=(fL+fR)/2;
 
-  // 肌色サンプリング（頬中央あたりから）
-  var skinColor = sampleSkin(ctx, lm, W, H);
+  // 現在の各パーツY座標
+  var eyeY  = (src[KP.eyeLC]?src[KP.eyeLC].y:src[KP.eyeLI].y + src[KP.eyeRI].y)/2; // 目の中心Y
+  var noseY = src[KP.noseTip].y;
+  var mouthY= (src[KP.mouthT].y+src[KP.mouthB].y)/2;
+  var chinY = src[KP.faceBot].y;
 
-  // ====================================================
-  // 1. 輪郭シェーディング（顔の端を絞って見せる）
-  // ====================================================
-  if (useShade) {
-    // 左右の輪郭にシェーディング
-    // 顔の理想幅との差分を計算
-    var idealW = fH / targetR;
-    var excessW = (fW - idealW) / 2; // 片側の余分な幅
+  // ---- 黄金比の理想Y位置 ----
+  // 顔を3等分：額〜目、目〜鼻、鼻〜あご
+  // 黄金比では目が額から1/3、鼻が2/3、口が5/6あたりが理想
+  var idealEyeY   = fTop + fH * (1/3);
+  var idealNoseY  = fTop + fH * (2/3);
+  var idealMouthY = fTop + fH * (5/6);
 
-    // 輪郭シェーディングの幅（顔幅の比率で決まる）
-    var shadeWidth = Math.max(fW * 0.12, excessW * 0.8);
+  // 白銀比は日本人顔型：目が少し低め
+  if(ratio==='silver'){
+    idealEyeY   = fTop + fH * 0.38;
+    idealNoseY  = fTop + fH * 0.65;
+    idealMouthY = fTop + fH * 0.80;
+  }
 
-    // 左輪郭シェーディング
-    drawShadeGradient(ctx, {
-      x: fL, y: fTop,
-      w: shadeWidth * 2,
-      h: fH,
-      dir: 'left',   // 左から右へフェード
-      alpha: shadeStr * 0.55,
-      skinColor: skinColor,
-      clipPath: buildOvalPath(lm, W, H),
-    });
+  // ---- 目の間隔 ----
+  // 理想：目1個分＝顔幅の1/5（目幅＝顔幅の1/5、間隔も1/5）
+  var idealEyeW = fW / 5.0;
+  var idealEyeSpanC = fW / 5.0; // 左目中心〜右目中心
+  var currEyeLCx = src[KP.eyeLC]?src[KP.eyeLC].x:(src[KP.eyeLO].x+src[KP.eyeLI].x)/2;
+  var currEyeRCx = src[KP.eyeRC]?src[KP.eyeRC].x:(src[KP.eyeRO].x+src[KP.eyeRI].x)/2;
+  var currEyeSpan= currEyeRCx - currEyeLCx;
+  var idealEyeSpan = fW * 0.42; // 顔幅の42%が理想的な目の中心間距離
 
-    // 右輪郭シェーディング
-    drawShadeGradient(ctx, {
-      x: fR - shadeWidth * 2, y: fTop,
-      w: shadeWidth * 2,
-      h: fH,
-      dir: 'right',  // 右から左へフェード
-      alpha: shadeStr * 0.55,
-      skinColor: skinColor,
-      clipPath: buildOvalPath(lm, W, H),
-    });
+  // 目の中心X（理想）
+  var idealEyeLCx = fCX - idealEyeSpan/2;
+  var idealEyeRCx = fCX + idealEyeSpan/2;
 
-    // あごシェーディング（縦が短い場合に下を絞る）
-    if (curR < targetR * 0.9) {
-      var chinShadeH = fH * 0.18;
-      drawShadeGradient(ctx, {
-        x: fCX - fW*0.4, y: fBot - chinShadeH,
-        w: fW * 0.8,
-        h: chinShadeH,
-        dir: 'bottom',
-        alpha: shadeStr * 0.4,
-        skinColor: skinColor,
-        clipPath: buildOvalPath(lm, W, H),
-      });
+  // ---- 鼻の幅 ----
+  var currNoseW = src[KP.noseR].x - src[KP.noseL].x;
+  var idealNoseW = fW * 0.26; // 顔幅の26%
+
+  // ---- 口の幅 ----
+  var currMouthW = src[KP.mouthR].x - src[KP.mouthL].x;
+  var idealMouthW= fW * 0.38; // 顔幅の38%
+
+  // ============================================================
+  // 各ランドマークを理想位置にブレンド
+  // ============================================================
+  for(var i=0;i<src.length;i++){
+    // 輪郭点は絶対に変形しない
+    if(OVAL_SET.has(i)) continue;
+
+    var p=src[i];
+    var nx=p.x, ny=p.y;
+
+    // 顔の内側か判定
+    var normY=(p.y-fTop)/fH;
+    var normX=(p.x-fL)/fW;
+    if(normY<-0.02||normY>1.02) continue;
+    if(normX<-0.02||normX>1.02) continue;
+
+    // ------ Y方向：パーツゾーン別に移動 ------
+    // 眉毛ゾーン（額〜目）
+    if(normY<=(eyeY-fTop)/fH){
+      var t=(p.y-fTop)/(eyeY-fTop);
+      ny=fTop+t*(idealEyeY-fTop);
+    }
+    // 目〜鼻ゾーン
+    else if(normY<=(noseY-fTop)/fH){
+      var t=(p.y-eyeY)/(noseY-eyeY);
+      ny=idealEyeY+t*(idealNoseY-idealEyeY);
+    }
+    // 鼻〜口ゾーン
+    else if(normY<=(mouthY-fTop)/fH){
+      var t=(p.y-noseY)/(mouthY-noseY);
+      ny=idealNoseY+t*(idealMouthY-idealNoseY);
+    }
+    // 口〜あごゾーン
+    else{
+      var t=(p.y-mouthY)/(fBot-mouthY);
+      ny=idealMouthY+t*(fBot-idealMouthY);
     }
 
-    // こめかみシェーディング
-    var templeW = fW * 0.15;
-    var templeH = fH * 0.35;
-    drawShadeGradient(ctx, {
-      x: fL, y: fTop,
-      w: templeW, h: templeH,
-      dir: 'left',
-      alpha: shadeStr * 0.35,
-      skinColor: skinColor,
-      clipPath: buildOvalPath(lm, W, H),
-    });
-    drawShadeGradient(ctx, {
-      x: fR - templeW, y: fTop,
-      w: templeW, h: templeH,
-      dir: 'right',
-      alpha: shadeStr * 0.35,
-      skinColor: skinColor,
-      clipPath: buildOvalPath(lm, W, H),
-    });
+    // ------ X方向：目・鼻・口の横幅を調整 ------
+    // 目の間隔補正（目の周辺ランドマーク）
+    var eyeZoneL=[33,133,159,145,157,158,160,161,246,7,163,144,153,154,155,173];
+    var eyeZoneR=[263,362,386,374,384,385,387,388,466,249,390,373,374,380,381,382,398];
+    if(eyeZoneL.indexOf(i)!==-1){
+      // 左目：理想中心に寄せる
+      var fromCenter=p.x-currEyeLCx;
+      var idealX=idealEyeLCx+fromCenter*(idealEyeW/Math.max(1,src[KP.eyeLI].x-src[KP.eyeLO].x));
+      nx=idealEyeLCx+fromCenter;
+    }
+    if(eyeZoneR.indexOf(i)!==-1){
+      var fromCenter=p.x-currEyeRCx;
+      nx=idealEyeRCx+fromCenter;
+    }
+
+    // 鼻の幅補正
+    var noseZone=[4,5,195,197,6,168,98,97,2,326,327,129,358,115,220,45,275,440,218,237,44,274,460,457,250,458,459,1,164,393];
+    if(noseZone.indexOf(i)!==-1&&currNoseW>0){
+      var fromNoseC=p.x-fCX;
+      var scaleN=idealNoseW/currNoseW;
+      nx=fCX+fromNoseC*scaleN;
+    }
+
+    // 口の幅補正
+    var mouthZone=[61,291,0,17,13,14,78,82,87,14,317,402,311,312,308,324,318,402,317,14,87,178,88,95];
+    if(mouthZone.indexOf(i)!==-1&&currMouthW>0){
+      var fromMouthC=p.x-fCX;
+      var scaleM=idealMouthW/currMouthW;
+      nx=fCX+fromMouthC*scaleM;
+    }
+
+    // 強度ブレンド
+    tgt[i].x=p.x+(nx-p.x)*strength;
+    tgt[i].y=p.y+(ny-p.y)*strength;
   }
 
-  // ====================================================
-  // 2. ハイライト（鼻筋・額中央・あご先・頬骨）
-  // ====================================================
-  if (useHL) {
-    var hlAlpha = hlStr * 0.45;
-
-    // 鼻筋ハイライト
-    var noseRoot = lm[KP.noseRoot];
-    var noseTip  = lm[KP.noseTip];
-    var noseLineW = fW * 0.04;
-    drawHLStripe(ctx, noseRoot.x, noseRoot.y, noseTip.x, noseTip.y, noseLineW, hlAlpha);
-
-    // 額中央ハイライト
-    var foreW = fW * 0.14;
-    var foreH = fH * 0.20;
-    drawHLEllipse(ctx, fCX, fTop + foreH*0.5, foreW*0.5, foreH*0.5, hlAlpha * 0.7);
-
-    // あご先ハイライト
-    var chin = lm[KP.chin];
-    drawHLEllipse(ctx, chin.x, chin.y - fH*0.01, fW*0.06, fH*0.03, hlAlpha * 0.65);
-
-    // 頬骨ハイライト（目の下あたり）
-    var eyeLC = lm[KP.eyeLC] || lm[KP.eyeLI];
-    var eyeRC = lm[KP.eyeRC] || lm[KP.eyeRI];
-    var cheekHL_y = eyeLC.y + fH * 0.08;
-    var cheekHL_x_L = eyeLC.x - fW * 0.02;
-    var cheekHL_x_R = eyeRC.x + fW * 0.02;
-    drawHLEllipse(ctx, cheekHL_x_L, cheekHL_y, fW*0.10, fH*0.04, hlAlpha * 0.5);
-    drawHLEllipse(ctx, cheekHL_x_R, cheekHL_y, fW*0.10, fH*0.04, hlAlpha * 0.5);
-  }
+  return tgt;
 }
 
 // ============================================================
-// 描画ヘルパー
+// Delaunayワープ（輪郭固定）
 // ============================================================
+async function doWarp(srcData,srcLms,dstLms,W,H){
+  var result=new ImageData(W,H);
+  result.data.set(srcData.data);
 
-// 顔の楕円クリップパスを構築
-function buildOvalPath(lm, W, H) {
-  var path = new Path2D();
-  path.moveTo(lm[FACE_OVAL[0]].x, lm[FACE_OVAL[0]].y);
-  for (var i=1; i<FACE_OVAL.length; i++) {
-    path.lineTo(lm[FACE_OVAL[i]].x, lm[FACE_OVAL[i]].y);
-  }
-  path.closePath();
-  return path;
-}
-
-// グラデーションシェーディング
-function drawShadeGradient(ctx, opts) {
-  ctx.save();
-  if (opts.clipPath) ctx.clip(opts.clipPath);
-
-  var sc = opts.skinColor;
-  // 肌色より少し暗い色をシェーディングカラーに
-  var r = Math.max(0, sc.r - 40);
-  var g = Math.max(0, sc.g - 35);
-  var b = Math.max(0, sc.b - 25);
-
-  var blur = blurStr * 60;
-  var grad;
-
-  if (opts.dir === 'left') {
-    grad = ctx.createLinearGradient(opts.x, 0, opts.x + opts.w, 0);
-    grad.addColorStop(0, 'rgba('+r+','+g+','+b+','+opts.alpha+')');
-    grad.addColorStop(1, 'rgba('+r+','+g+','+b+',0)');
-  } else if (opts.dir === 'right') {
-    grad = ctx.createLinearGradient(opts.x + opts.w, 0, opts.x, 0);
-    grad.addColorStop(0, 'rgba('+r+','+g+','+b+','+opts.alpha+')');
-    grad.addColorStop(1, 'rgba('+r+','+g+','+b+',0)');
-  } else {
-    grad = ctx.createLinearGradient(0, opts.y + opts.h, 0, opts.y);
-    grad.addColorStop(0, 'rgba('+r+','+g+','+b+','+opts.alpha+')');
-    grad.addColorStop(1, 'rgba('+r+','+g+','+b+',0)');
-  }
-
-  ctx.filter = 'blur(' + blur + 'px)';
-  ctx.fillStyle = grad;
-  ctx.fillRect(opts.x, opts.y, opts.w, opts.h);
-  ctx.restore();
-}
-
-// 楕円ハイライト
-function drawHLEllipse(ctx, cx, cy, rx, ry, alpha) {
-  ctx.save();
-  ctx.filter = 'blur(' + (blurStr * 30 + 8) + 'px)';
-  var grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(rx, ry));
-  grad.addColorStop(0, 'rgba(255,248,220,' + alpha + ')');
-  grad.addColorStop(0.5, 'rgba(255,248,200,' + (alpha*0.4) + ')');
-  grad.addColorStop(1, 'rgba(255,248,200,0)');
-  ctx.fillStyle = grad;
-  ctx.beginPath();
-  ctx.ellipse(cx, cy, rx*2.5, ry*2.5, 0, 0, Math.PI*2);
-  ctx.fill();
-  ctx.restore();
-}
-
-// 線状ハイライト（鼻筋用）
-function drawHLStripe(ctx, x1, y1, x2, y2, w, alpha) {
-  ctx.save();
-  ctx.filter = 'blur(' + (blurStr * 20 + 5) + 'px)';
-  var len = Math.hypot(x2-x1, y2-y1);
-  var angle = Math.atan2(y2-y1, x2-x1);
-  ctx.translate(x1, y1);
-  ctx.rotate(angle);
-  var grad = ctx.createLinearGradient(-w, 0, w, 0);
-  grad.addColorStop(0, 'rgba(255,252,230,0)');
-  grad.addColorStop(0.5, 'rgba(255,252,230,' + alpha + ')');
-  grad.addColorStop(1, 'rgba(255,252,230,0)');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, -w*1.5, len, w*3);
-  ctx.restore();
-}
-
-// ガイドライン描画
-function drawGuides(ctx, lm, W, H) {
-  var targetR = ratio==='gold' ? PHI : SQ2;
-  var fTop=lm[KP.faceTop].y, fBot=lm[KP.faceBot].y;
-  var fL=lm[KP.faceL].x,     fR=lm[KP.faceR].x;
-  var fH=fBot-fTop, fW=fR-fL;
-  var fCX=(fL+fR)/2, fCY=(fTop+fBot)/2;
-  var idealW = fH / targetR;
-
-  ctx.save();
-  ctx.setLineDash([6,4]);
-  ctx.lineWidth = Math.max(1, W/500);
-
-  // 理想の横幅ライン（左右）
-  var idealL = fCX - idealW/2;
-  var idealR = fCX + idealW/2;
-  ctx.strokeStyle = 'rgba(200,169,110,0.6)';
-  ctx.beginPath(); ctx.moveTo(idealL, fTop); ctx.lineTo(idealL, fBot); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(idealR, fTop); ctx.lineTo(idealR, fBot); ctx.stroke();
-
-  // 顔の三分割ライン
-  ctx.strokeStyle = 'rgba(200,169,110,0.35)';
-  var third = fH / 3;
-  [1,2].forEach(function(i){
-    ctx.beginPath();
-    ctx.moveTo(fL, fTop + third*i);
-    ctx.lineTo(fR, fTop + third*i);
-    ctx.stroke();
+  // 使用点：全ランドマーク（stride=2）＋コーナー
+  var used=[];
+  for(var i=0;i<srcLms.length;i+=2)used.push(i);
+  // 重要点追加
+  [KP.faceTop,KP.faceBot,KP.faceL,KP.faceR,
+   KP.eyeLO,KP.eyeLI,KP.eyeRO,KP.eyeRI,
+   KP.eyeLC,KP.eyeRC,
+   KP.noseTip,KP.noseRoot,KP.noseL,KP.noseR,
+   KP.mouthL,KP.mouthR,KP.mouthT,KP.mouthB,
+   KP.chin].forEach(function(idx){
+    if(idx<srcLms.length&&used.indexOf(idx)===-1)used.push(idx);
   });
 
-  // 中心ライン
-  ctx.strokeStyle = 'rgba(200,169,110,0.2)';
-  ctx.beginPath(); ctx.moveTo(fCX, fTop); ctx.lineTo(fCX, fBot); ctx.stroke();
-
-  ctx.restore();
-}
-
-// 肌色サンプリング
-function sampleSkin(ctx, lm, W, H) {
-  // 左頬あたりをサンプル
-  var eyeLC = lm[KP.eyeLC] || lm[KP.eyeLI];
-  var noseTip = lm[KP.noseTip];
-  var sx = Math.round((eyeLC.x + noseTip.x) / 2);
-  var sy = Math.round((eyeLC.y + noseTip.y) / 2);
-  sx = Math.max(0, Math.min(W-1, sx));
-  sy = Math.max(0, Math.min(H-1, sy));
-  var px = ctx.getImageData(sx, sy, 1, 1).data;
-  return { r: px[0], g: px[1], b: px[2] };
-}
-
-// ============================================================
-// 分析パネル
-// ============================================================
-function showAnalysis(lm, W, H) {
-  var targetR = ratio==='gold' ? PHI : SQ2;
-  var fTop=lm[KP.faceTop].y, fBot=lm[KP.faceBot].y;
-  var fL=lm[KP.faceL].x,     fR=lm[KP.faceR].x;
-  var fH=fBot-fTop, fW=fR-fL;
-  var curR=fH/fW;
-  var diff=Math.abs(targetR-curR)/targetR;
-
-  var idealW = fH/targetR;
-  var excessPct = Math.round(((fW/idealW)-1)*100);
-
-  var parts = [
-    {name:'左輪郭', shade:Math.min(100,excessPct+10), hl:0},
-    {name:'右輪郭', shade:Math.min(100,excessPct+10), hl:0},
-    {name:'鼻筋',   shade:0, hl:70},
-    {name:'額中央', shade:0, hl:55},
-    {name:'頬骨',   shade:0, hl:45},
-    {name:'あご先', shade:0, hl:50},
+  // コーナー（変形なし）
+  var corners=[
+    {x:0,y:0},{x:W/2,y:0},{x:W,y:0},
+    {x:0,y:H/2},{x:W,y:H/2},
+    {x:0,y:H},{x:W/2,y:H},{x:W,y:H},
   ];
 
-  var grid = document.getElementById('partsGrid');
-  grid.innerHTML = '';
-  parts.forEach(function(p){
-    var card = document.createElement('div');
-    card.className = 'part-card';
-    var shadeBar = p.shade>0 ? '<div class="part-bar-wrap"><div class="part-bar shade" style="width:'+p.shade+'%"></div></div><div class="part-val">陰 '+p.shade+'%</div>' : '';
-    var hlBar    = p.hl>0   ? '<div class="part-bar-wrap"><div class="part-bar hl" style="width:'+p.hl+'%"></div></div><div class="part-val">光 '+p.hl+'%</div>' : '';
-    card.innerHTML = '<div class="part-name">'+p.name+'</div>'+shadeBar+hlBar;
-    grid.appendChild(card);
-  });
+  var sp=used.map(function(i){return srcLms[i];}).concat(corners);
+  var dp=used.map(function(i){return dstLms[i];}).concat(corners);
 
-  var advice = document.getElementById('adviceBox');
-  var targetName = ratio==='gold' ? '黄金比（1.618）' : '白銀比（1.414）';
-  advice.innerHTML =
-    '📏 現在の縦横比 <strong>'+curR.toFixed(3)+'</strong> → 目標 <strong>'+targetR.toFixed(3)+'</strong><br>' +
-    (excessPct>0 ?
-      '顔幅が理想より約<strong>'+excessPct+'%</strong>広め。<br>両サイドのシェーディングで引き締め効果が出ます。' :
-      '縦横比はほぼ理想的です！<br>ハイライトで立体感を加えましょう。') +
-    '<br><br>💄 <strong>メイクのコツ</strong><br>' +
-    '① 輪郭に沿ってシェーディングをのせる<br>' +
-    '② 鼻筋・額中央・あご先にハイライト<br>' +
-    '③ ブラシでよくぼかして自然に仕上げる';
+  var tris=bowyer(dp);
+  var src=srcData.data,dst=result.data;
 
-  document.getElementById('analysis').classList.add('show');
+  var CHUNK=20;
+  for(var ti=0;ti<tris.length;ti+=CHUNK){
+    for(var tj=ti;tj<Math.min(ti+CHUNK,tris.length);tj++){
+      rasterTri(tris[tj],sp,dp,src,dst,W,H);
+    }
+    setProg(60+(ti/tris.length)*22);
+    await sleep(0);
+  }
+  return result;
+}
+
+function rasterTri(tri,sp,dp,src,dst,W,H){
+  var i0=tri[0],i1=tri[1],i2=tri[2];
+  var s0=sp[i0],s1=sp[i1],s2=sp[i2];
+  var d0=dp[i0],d1=dp[i1],d2=dp[i2];
+
+  var minX=Math.max(0,Math.floor(Math.min(d0.x,d1.x,d2.x)));
+  var minY=Math.max(0,Math.floor(Math.min(d0.y,d1.y,d2.y)));
+  var maxX=Math.min(W-1,Math.ceil(Math.max(d0.x,d1.x,d2.x)));
+  var maxY=Math.min(H-1,Math.ceil(Math.max(d0.y,d1.y,d2.y)));
+
+  var dx0=d1.x-d0.x,dy0=d1.y-d0.y;
+  var dx1=d2.x-d0.x,dy1=d2.y-d0.y;
+  var det=dx0*dy1-dx1*dy0;
+  if(Math.abs(det)<0.5)return;
+
+  var sx0=s1.x-s0.x,sy0=s1.y-s0.y;
+  var sx1=s2.x-s0.x,sy1=s2.y-s0.y;
+
+  for(var py=minY;py<=maxY;py++){
+    for(var px=minX;px<=maxX;px++){
+      var ex=px-d0.x,ey=py-d0.y;
+      var u=(ex*dy1-ey*dx1)/det;
+      var v=(ey*dx0-ex*dy0)/det;
+      if(u<0||v<0||u+v>1)continue;
+
+      // 逆マッピング（dst→src）
+      var sx=s0.x+(sx0*ex+sx1*ey)/det*(dy1/dy1); // 簡略化
+      // 正しい逆変換
+      var ax=sx0*dy1-sx1*dy0;
+      var bx=sx1*dx0-sx0*dx1;
+      var ay=sy0*dy1-sy1*dy0;
+      var by=sy1*dx0-sy0*dx1;
+      var srcX=s0.x+(ax*ex+bx*ey)/det;
+      var srcY=s0.y+(ay*ex+by*ey)/det;
+
+      if(srcX<0||srcX>W-1||srcY<0||srcY>H-1)continue;
+
+      var fx=Math.floor(srcX),fy=Math.floor(srcY);
+      var tx=srcX-fx,ty=srcY-fy;
+      if(fx>=W-1){fx=W-2;tx=1;}
+      if(fy>=H-1){fy=H-2;ty=1;}
+
+      var i00=(fy*W+fx)*4,i10=i00+4,i01=i00+W*4,i11=i01+4;
+      var di=(py*W+px)*4;
+      var w00=(1-tx)*(1-ty),w10=tx*(1-ty),w01=(1-tx)*ty,w11=tx*ty;
+
+      for(var c=0;c<3;c++){
+        dst[di+c]=Math.round(src[i00+c]*w00+src[i10+c]*w10+src[i01+c]*w01+src[i11+c]*w11);
+      }
+      dst[di+3]=255;
+    }
+  }
+}
+
+// ============================================================
+// シェーディング：輪郭と変換後の差分に合成
+// ============================================================
+function applyContourShading(ctx,srcLms,dstLms,W,H){
+  if(shadeStr<0.01)return;
+
+  var fTop=srcLms[KP.faceTop].y,fBot=srcLms[KP.faceBot].y;
+  var fL=srcLms[KP.faceL].x,   fR=srcLms[KP.faceR].x;
+  var fH=fBot-fTop,fW=fR-fL;
+  var fCX=(fL+fR)/2,fCY=(fTop+fBot)/2;
+
+  // 肌色サンプリング
+  var skinX=Math.round(fCX),skinY=Math.round(fCY-fH*0.1);
+  skinX=Math.max(0,Math.min(W-1,skinX));skinY=Math.max(0,Math.min(H-1,skinY));
+  var px=ctx.getImageData(skinX,skinY,1,1).data;
+  var sr=Math.max(0,px[0]-45),sg=Math.max(0,px[1]-38),sb=Math.max(0,px[2]-30);
+  var shadeColor='rgba('+sr+','+sg+','+sb+',';
+
+  // 輪郭の楕円パス（変形なし）
+  var ovalPath=new Path2D();
+  ovalPath.moveTo(srcLms[KP.OVAL[0]].x,srcLms[KP.OVAL[0]].y);
+  KP.OVAL.forEach(function(idx){ovalPath.lineTo(srcLms[idx].x,srcLms[idx].y);});
+  ovalPath.closePath();
+
+  var blur=Math.round(fW*0.06);
+  var shW=fW*0.18; // シェーディング幅
+
+  ctx.save();
+  ctx.clip(ovalPath);
+
+  // 左輪郭シェーディング
+  var gL=ctx.createLinearGradient(fL,0,fL+shW,0);
+  gL.addColorStop(0,shadeColor+(shadeStr*0.5)+')');
+  gL.addColorStop(1,shadeColor+'0)');
+  ctx.filter='blur('+blur+'px)';
+  ctx.fillStyle=gL;
+  ctx.fillRect(fL,fTop,shW,fH);
+
+  // 右輪郭シェーディング
+  var gR=ctx.createLinearGradient(fR,0,fR-shW,0);
+  gR.addColorStop(0,shadeColor+(shadeStr*0.5)+')');
+  gR.addColorStop(1,shadeColor+'0)');
+  ctx.fillStyle=gR;
+  ctx.fillRect(fR-shW,fTop,shW,fH);
+
+  // あごシェーディング
+  var gB=ctx.createLinearGradient(0,fBot,0,fBot-fH*0.15);
+  gB.addColorStop(0,shadeColor+(shadeStr*0.35)+')');
+  gB.addColorStop(1,shadeColor+'0)');
+  ctx.fillStyle=gB;
+  ctx.fillRect(fCX-fW*0.4,fBot-fH*0.15,fW*0.8,fH*0.15);
+
+  ctx.filter='none';
+
+  // ---- ハイライト ----
+  // 鼻筋
+  var nR=srcLms[KP.noseRoot],nT=srcLms[KP.noseTip];
+  ctx.filter='blur('+Math.round(fW*0.025)+'px)';
+  var gNose=ctx.createLinearGradient(nR.x-fW*0.015,0,nR.x+fW*0.015,0);
+  gNose.addColorStop(0,'rgba(255,252,230,0)');
+  gNose.addColorStop(0.5,'rgba(255,252,230,'+(shadeStr*0.35)+')');
+  gNose.addColorStop(1,'rgba(255,252,230,0)');
+  ctx.fillStyle=gNose;
+  ctx.fillRect(nR.x-fW*0.05,nR.y,fW*0.1,nT.y-nR.y);
+
+  ctx.restore();
+}
+
+// ============================================================
+// Bowyer-Watson
+// ============================================================
+function bowyer(pts){
+  var minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  pts.forEach(function(p){if(p.x<minX)minX=p.x;if(p.y<minY)minY=p.y;if(p.x>maxX)maxX=p.x;if(p.y>maxY)maxY=p.y;});
+  var dx=(maxX-minX)*3,dy=(maxY-minY)*3,mx=(minX+maxX)/2,my=(minY+maxY)/2;
+  var N=pts.length;
+  var allPts=pts.concat([{x:mx-dx*2,y:my-dy*2},{x:mx,y:my+dy*2},{x:mx+dx*2,y:my-dy*2}]);
+  var tris=[[N,N+1,N+2]];
+
+  for(var pi=0;pi<N;pi++){
+    var p=allPts[pi];
+    var bad=[];
+    for(var ti=0;ti<tris.length;ti++){
+      var t=tris[ti];
+      var cc=circumcircle(allPts[t[0]],allPts[t[1]],allPts[t[2]]);
+      if(cc&&dist2(p.x,p.y,cc.cx,cc.cy)<cc.r2)bad.push(ti);
+    }
+    var poly=[];
+    for(var bi=0;bi<bad.length;bi++){
+      var bt=tris[bad[bi]];
+      [[bt[0],bt[1]],[bt[1],bt[2]],[bt[2],bt[0]]].forEach(function(e){
+        var sh=false;
+        for(var bj=0;bj<bad.length;bj++){
+          if(bj===bi)continue;
+          var ot=tris[bad[bj]];
+          if((ot[0]===e[0]||ot[1]===e[0]||ot[2]===e[0])&&(ot[0]===e[1]||ot[1]===e[1]||ot[2]===e[1])){sh=true;break;}
+        }
+        if(!sh)poly.push(e);
+      });
+    }
+    tris=tris.filter(function(_,i){return bad.indexOf(i)===-1;});
+    poly.forEach(function(e){tris.push([e[0],e[1],pi]);});
+  }
+  return tris.filter(function(t){return t[0]<N&&t[1]<N&&t[2]<N;});
+}
+
+function circumcircle(a,b,c){
+  var D=2*(a.x*(b.y-c.y)+b.x*(c.y-a.y)+c.x*(a.y-b.y));
+  if(Math.abs(D)<1e-8)return null;
+  var ux=((a.x*a.x+a.y*a.y)*(b.y-c.y)+(b.x*b.x+b.y*b.y)*(c.y-a.y)+(c.x*c.x+c.y*c.y)*(a.y-b.y))/D;
+  var uy=((a.x*a.x+a.y*a.y)*(c.x-b.x)+(b.x*b.x+b.y*b.y)*(a.x-c.x)+(c.x*c.x+c.y*c.y)*(b.x-a.x))/D;
+  return{cx:ux,cy:uy,r2:dist2(a.x,a.y,ux,uy)};
+}
+function dist2(x1,y1,x2,y2){return(x1-x2)*(x1-x2)+(y1-y2)*(y1-y2);}
+
+// ============================================================
+// 統計表示
+// ============================================================
+function showStats(lm,W,H){
+  var R=ratio==='gold'?PHI:SQ2;
+  var fTop=lm[KP.faceTop].y,fBot=lm[KP.faceBot].y;
+  var fL=lm[KP.faceL].x,fR=lm[KP.faceR].x;
+  var fH=fBot-fTop,fW=fR-fL;
+  var fCX=(fL+fR)/2;
+  var eyeY=(lm[KP.eyeLC]?lm[KP.eyeLC].y:(lm[KP.eyeLI].y+lm[KP.eyeRI].y)/2);
+  var noseY=lm[KP.noseTip].y;
+  var mouthY=(lm[KP.mouthT].y+lm[KP.mouthB].y)/2;
+  var eyeLCx=lm[KP.eyeLC]?lm[KP.eyeLC].x:(lm[KP.eyeLO].x+lm[KP.eyeLI].x)/2;
+  var eyeRCx=lm[KP.eyeRC]?lm[KP.eyeRC].x:(lm[KP.eyeRO].x+lm[KP.eyeRI].x)/2;
+
+  var curFR=(fH/fW).toFixed(3);
+  var eyePos=((eyeY-fTop)/fH*100).toFixed(1)+'%（理想'+(ratio==='gold'?'33.3':'38.0')+'%）';
+  var eyeInt=((eyeRCx-eyeLCx)/fW).toFixed(3)+'（理想0.420）';
+  var noseLen=((noseY-fTop)/fH*100).toFixed(1)+'%（理想'+(ratio==='gold'?'66.7':'65.0')+'%）';
+  var mouthPos=((mouthY-fTop)/fH*100).toFixed(1)+'%（理想'+(ratio==='gold'?'83.3':'80.0')+'%）';
+
+  function cls(cur,ideal,tol){return Math.abs(cur-ideal)<tol?'sv g':'sv m';}
+
+  document.getElementById('sFR').textContent=curFR+'（理想'+R.toFixed(3)+')';
+  document.getElementById('sFR').className=Math.abs(fH/fW-R)<0.15?'sv g':'sv m';
+  document.getElementById('sEP').textContent=eyePos;
+  document.getElementById('sEI').textContent=eyeInt;
+  document.getElementById('sNL').textContent=noseLen;
+  document.getElementById('sMO').textContent=mouthPos;
+  document.getElementById('stats').classList.add('show');
 }
 
 // ============================================================
 // 表示切替
 // ============================================================
 function showView(type){
-  curView=type;
-  updCmp(type);
+  curView=type;updCmp(type);
   var rc=document.getElementById('rc');
   var ctx=rc.getContext('2d');
-  var W=photo.naturalWidth, H=photo.naturalHeight;
+  var W=photo.naturalWidth,H=photo.naturalHeight;
 
-  if (type==='side'){
-    rc.width=W*2; rc.height=H;
+  if(type==='side'){
+    rc.width=W*2;rc.height=H;
     ctx.drawImage(photo,0,0);
-    // 右半分に合成後を再描画するため、再処理
     ctx.drawImage(photo,W,0);
-    // ラベル
-    ctx.fillStyle='rgba(0,0,0,.5)';
-    ctx.fillRect(0,0,W,30); ctx.fillRect(W,0,W,30);
-    ctx.fillStyle='#fff'; ctx.font='bold 14px sans-serif'; ctx.textAlign='center';
-    ctx.fillText('元の顔', W/2, 21);
-    ctx.fillText('シェーディング後', W+W/2, 21);
-    // 右側にシェーディング再適用
-    applyShading(ctx, lms, W*2, H).then(function(){
-      if(useGuide) drawGuides(ctx, lms, W*2, H);
+    // 右側に変換後を再適用
+    var tmpC=document.createElement('canvas');tmpC.width=W;tmpC.height=H;
+    var tmpX=tmpC.getContext('2d');
+    tmpX.drawImage(photo,0,0);
+    var srcD=tmpX.getImageData(0,0,W,H);
+    var tgt=calcIdealLandmarks(lms,W,H);
+    doWarp(srcD,lms,tgt,W,H).then(function(wd){
+      tmpX.putImageData(wd,0,0);
+      applyContourShading(tmpX,lms,tgt,W,H);
+      ctx.drawImage(tmpC,W,0);
+      // ラベル
+      ctx.fillStyle='rgba(0,0,0,.5)';
+      ctx.fillRect(0,0,W,30);ctx.fillRect(W,0,W,30);
+      ctx.fillStyle='#fff';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
+      ctx.fillText('元の顔',W/2,21);ctx.fillText('変換後',W+W/2,21);
     });
   } else {
-    rc.width=W; rc.height=H;
-    ctx.drawImage(photo,0,0);
-    if (type==='shade'){
-      applyShading(ctx, lms, W, H).then(function(){
-        if(useGuide) drawGuides(ctx, lms, W, H);
+    rc.width=W;rc.height=H;
+    if(type==='orig'){ctx.drawImage(photo,0,0);}
+    else{
+      // 変換後を再描画
+      ctx.drawImage(photo,0,0);
+      var srcD=ctx.getImageData(0,0,W,H);
+      var tgt=calcIdealLandmarks(lms,W,H);
+      doWarp(srcD,lms,tgt,W,H).then(function(wd){
+        ctx.putImageData(wd,0,0);
+        applyContourShading(ctx,lms,tgt,W,H);
       });
     }
   }
 }
 
 function updCmp(v){
-  document.getElementById('cOrig').className ='cmp-btn'+(v==='orig' ?' on':'');
-  document.getElementById('cShade').className='cmp-btn'+(v==='shade'?' on':'');
-  document.getElementById('cSide').className ='cmp-btn'+(v==='side' ?' on':'');
+  document.getElementById('cO').className='cmp-btn'+(v==='orig'?' on':'');
+  document.getElementById('cT').className='cmp-btn'+(v==='trans'?' on':'');
+  document.getElementById('cS').className='cmp-btn'+(v==='side'?' on':'');
 }
 
 function saveImg(){
@@ -813,16 +844,13 @@ function saveImg(){
   if(/iPad|iPhone|iPod/.test(navigator.userAgent)){
     var w=window.open('','_blank');
     if(w){w.document.write('<img src="'+url+'" style="max-width:100%"><p style="padding:10px;font-family:sans-serif;color:#666">長押しして保存</p>');w.document.close();}
-  } else {
-    var a=document.createElement('a'); a.download='faceshade_'+Date.now()+'.png'; a.href=url; a.click();
+  }else{
+    var a=document.createElement('a');a.download='facetrans_'+Date.now()+'.png';a.href=url;a.click();
   }
 }
 
-// ============================================================
-// UI ヘルパー
-// ============================================================
-function st(msg,type){ var el=document.getElementById('stbox'); el.textContent=msg; el.className='stbox show '+(type||'info'); }
-function setProg(pct,show){ var bar=document.getElementById('prog'); if(show!==undefined){if(show)bar.classList.add('show');else{bar.classList.remove('show');return;}} document.getElementById('progFill').style.width=pct+'%'; }
+function st(msg,type){var el=document.getElementById('stbox');el.textContent=msg;el.className='stbox show '+(type||'info');}
+function setProg(pct,show){var bar=document.getElementById('prog');if(show!==undefined){if(show)bar.classList.add('show');else{bar.classList.remove('show');return;}}document.getElementById('progFill').style.width=pct+'%';}
 </script>
 </body>
 </html>
