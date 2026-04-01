@@ -338,117 +338,110 @@ function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 // 出力画像の各ピクセルに対して、元画像のどこから来るかを計算
 // ============================================================
 async function warpFace(ctx, lm, W, H){
-  // ヘルパー
   var gx=(i,fb)=>lm[i]?lm[i].x:fb;
   var gy=(i,fb)=>lm[i]?lm[i].y:fb;
 
-  // 顔の基準
   var fT=gy(KP.fT,H*.1), fB=gy(KP.fB,H*.9);
   var fL=gx(KP.fL,W*.2), fR=gx(KP.fR,W*.8);
   var fH=fB-fT, fW=fR-fL, fCX=(fL+fR)/2;
 
-  // 現在のパーツ中心
-  var eLx=lm[KP.eLC]?lm[KP.eLC].x:(gx(KP.eLO,fCX-fW*.2)+gx(KP.eLI,fCX-fW*.05))/2;
-  var eLy=lm[KP.eLC]?lm[KP.eLC].y:(gy(KP.eLT,fT+fH*.34)+gy(KP.eLB,fT+fH*.38))/2;
-  var eRx=lm[KP.eRC]?lm[KP.eRC].x:(gx(KP.eRI,fCX+fW*.05)+gx(KP.eRO,fCX+fW*.2))/2;
-  var eRy=lm[KP.eRC]?lm[KP.eRC].y:(gy(KP.eRT,fT+fH*.34)+gy(KP.eRB,fT+fH*.38))/2;
+  // 現在のパーツ中心（元画像座標）
+  var eLx=lm[KP.eLC]?lm[KP.eLC].x:(gx(KP.eLO,0)+gx(KP.eLI,0))/2;
+  var eLy=lm[KP.eLC]?lm[KP.eLC].y:(gy(KP.eLT,0)+gy(KP.eLB,0))/2;
+  var eRx=lm[KP.eRC]?lm[KP.eRC].x:(gx(KP.eRI,0)+gx(KP.eRO,0))/2;
+  var eRy=lm[KP.eRC]?lm[KP.eRC].y:(gy(KP.eRT,0)+gy(KP.eRB,0))/2;
   var nTx=gx(KP.nT,fCX), nTy=gy(KP.nT,fT+fH*.65);
-  var nLx=gx(KP.nL,fCX-fW*.13), nRx=gx(KP.nNR,fCX+fW*.13);
-  var mLx=gx(KP.mL,fCX-fW*.18), mRx=gx(KP.mR,fCX+fW*.18);
+  var mCx=(gx(KP.mL,fCX-fW*.18)+gx(KP.mR,fCX+fW*.18))/2;
   var mCy=(gy(KP.mT,fT+fH*.78)+gy(KP.mB,fT+fH*.83))/2;
-  var mCx=(mLx+mRx)/2;
+  var browCx=fCX, browCy=(eLy+eRy)/2-fH*.07;
 
   // 理想位置
   var isG=G.ratio==='gold';
   var idEy=fT+fH*(isG?.333:.380);
   var idNy=fT+fH*(isG?.667:.650);
   var idMy=fT+fH*(isG?.820:.800);
-  var idES=fW*0.42; // 目の間隔
+  var idES=fW*0.42;
   var idELx=fCX-idES/2, idERx=fCX+idES/2;
-  var idNW=fW*0.26; // 鼻幅
-  var idMW=fW*0.36; // 口幅
 
-  // 制御点：各パーツ中心・影響半径・X移動・Y移動のみ（スケールなし）
-  // 逆マッピングなので「出力→元」の方向で定義（符号が逆）
-  var ctrls=[
-    // 左目：X方向も理想位置に移動
-    {cx:eLx, cy:eLy, r:fW*.24, dx:(idELx-eLx)*G.str, dy:(idEy-eLy)*G.str},
-    // 右目
-    {cx:eRx, cy:eRy, r:fW*.24, dx:(idERx-eRx)*G.str, dy:(idEy-eRy)*G.str},
-    // 鼻：Y方向のみ
-    {cx:nTx, cy:nTy, r:fW*.22, dx:0, dy:(idNy-nTy)*G.str},
-    // 口：Y方向のみ
-    {cx:mCx, cy:mCy, r:fW*.20, dx:0, dy:(idMy-mCy)*G.str},
-    // 眉毛も目に連動（影響が弱め）
-    {cx:(eLx+eRx)/2, cy:eLy-fH*.08, r:fW*.35, dx:0, dy:(idEy-eLy)*G.str*0.8},
+  // 各パーツの移動量（順方向：元→出力）
+  var moves=[
+    {cx:eLx,   cy:eLy,   r:fW*.25, fdx:(idELx-eLx)*G.str, fdy:(idEy-eLy)*G.str},
+    {cx:eRx,   cy:eRy,   r:fW*.25, fdx:(idERx-eRx)*G.str, fdy:(idEy-eRy)*G.str},
+    {cx:nTx,   cy:nTy,   r:fW*.22, fdx:0,                  fdy:(idNy-nTy)*G.str},
+    {cx:mCx,   cy:mCy,   r:fW*.20, fdx:0,                  fdy:(idMy-mCy)*G.str},
+    {cx:browCx,cy:browCy,r:fW*.32, fdx:0,                  fdy:(idEy-eLy)*G.str*0.7},
   ];
 
-  // 元画像のピクセルデータを取得
-  var tmp=document.createElement('canvas'); tmp.width=W; tmp.height=H;
-  var tc=tmp.getContext('2d'); tc.drawImage(G.photo,0,0);
-  var srcData=tc.getImageData(0,0,W,H).data;
+  // ダウンサンプリング（高速化）
+  var sc=Math.min(1,700/Math.max(W,H));
+  var sW=Math.round(W*sc), sH=Math.round(H*sc);
 
-  // 出力バッファ
-  var outImg=ctx.createImageData(W,H);
-  var dst=outImg.data;
-
-  // ダウンサンプリングして高速化（長辺を最大800pxに）
-  var scale=Math.min(1, 800/Math.max(W,H));
-  var sW=Math.round(W*scale), sH=Math.round(H*scale);
-
-  // スケールした作業用canvas
   var wc=document.createElement('canvas'); wc.width=sW; wc.height=sH;
   var wctx=wc.getContext('2d');
   wctx.drawImage(G.photo,0,0,sW,sH);
-  var wData=wctx.getImageData(0,0,sW,sH).data;
-  var wOut=new Uint8ClampedArray(sW*sH*4);
+  var src=wctx.getImageData(0,0,sW,sH).data;
+  var out=new Uint8ClampedArray(sW*sH*4);
 
-  // 逆マッピング：出力の各ピクセルに対して元座標を計算
-  var CHUNK=sH/20|0;
-  for(var y=0;y<sH;y++){
-    if(y%CHUNK===0){ setProg(35+y/sH*45); await sleep(0); }
-    for(var x=0;x<sW;x++){
-      // 正規化座標（フルサイズ基準）
-      var px=x/scale, py=y/scale;
+  // 逆マッピング
+  // 出力ピクセル(ox,oy)に対して、元画像のどこ(sx,sy)から来るかを求める
+  // 順方向：元(sx,sy) → 出力(sx+dx,sy+dy)
+  // 逆方向：出力(ox,oy) は 元(ox-dx,oy-dy) から来る
+  // ただしdxは出力座標ではなく元座標基準で定義されているため
+  // 反復法で解く（2回反復で十分）
+  var CHUNK=Math.max(1,sH/20|0);
 
-      // この出力点に対する変位の合計を計算
-      var totalDx=0, totalDy=0;
+  for(var oy=0;oy<sH;oy++){
+    if(oy%CHUNK===0){ setProg(35+oy/sH*50); await sleep(0); }
+    for(var ox=0;ox<sW;ox++){
+      // フルサイズ換算座標
+      var fpx=ox/sc, fpy=oy/sc;
 
-      for(var ci=0;ci<ctrls.length;ci++){
-        var c=ctrls[ci];
-        var d=Math.sqrt((px-c.cx)*(px-c.cx)+(py-c.cy)*(py-c.cy));
-        if(d<c.r){
-          // 4次減衰（滑らか）
-          var t=d/c.r;
-          var w=(1-t*t)*(1-t*t);
-          totalDx+=c.dx*w;
-          totalDy+=c.dy*w;
+      // 元座標の初期推定（出力座標をそのまま使う）
+      var sx=fpx, sy=fpy;
+
+      // 2回反復してより正確な逆変換を求める
+      for(var iter=0;iter<2;iter++){
+        var ddx=0, ddy=0;
+        for(var mi=0;mi<moves.length;mi++){
+          var m=moves[mi];
+          // 現在の推定元座標で距離を計算
+          var d=Math.sqrt((sx-m.cx)*(sx-m.cx)+(sy-m.cy)*(sy-m.cy));
+          if(d<m.r){
+            var t=d/m.r;
+            var w=(1-t*t)*(1-t*t); // 4次減衰
+            ddx+=m.fdx*w;
+            ddy+=m.fdy*w;
+          }
         }
+        // 元座標 = 出力座標 - 移動量
+        sx=fpx-ddx;
+        sy=fpy-ddy;
       }
 
-      // 逆変換：出力(px,py)は元画像の(srcX,srcY)から来る
-      // 順方向：元(sx,sy) → 出力(sx+dx, sy+dy)
-      // 逆方向：出力(px,py) → 元(px-dx, py-dy)
-      var srcX=px-totalDx;
-      var srcY=py-totalDy;
+      // バイリニア補間でサンプリング
+      var sxs=sx*sc, sys=sy*sc;
+      var x0=Math.floor(sxs), y0=Math.floor(sys);
+      var x1=x0+1, y1=y0+1;
+      x0=Math.max(0,Math.min(sW-1,x0));
+      x1=Math.max(0,Math.min(sW-1,x1));
+      y0=Math.max(0,Math.min(sH-1,y0));
+      y1=Math.max(0,Math.min(sH-1,y1));
+      var tx=sxs-Math.floor(sxs), ty=sys-Math.floor(sys);
+      var w00=(1-tx)*(1-ty), w10=tx*(1-ty), w01=(1-tx)*ty, w11=tx*ty;
 
-      // スケール座標に変換
-      var si=Math.round(srcX*scale), sj=Math.round(srcY*scale);
-      si=Math.max(0,Math.min(sW-1,si));
-      sj=Math.max(0,Math.min(sH-1,sj));
-
-      var di=(y*sW+x)*4;
-      var si2=(sj*sW+si)*4;
-      wOut[di]=wData[si2];
-      wOut[di+1]=wData[si2+1];
-      wOut[di+2]=wData[si2+2];
-      wOut[di+3]=255;
+      var di=(oy*sW+ox)*4;
+      var i00=(y0*sW+x0)*4, i10=(y0*sW+x1)*4;
+      var i01=(y1*sW+x0)*4, i11=(y1*sW+x1)*4;
+      for(var c=0;c<3;c++){
+        out[di+c]=Math.round(src[i00+c]*w00+src[i10+c]*w10+src[i01+c]*w01+src[i11+c]*w11);
+      }
+      out[di+3]=255;
     }
   }
 
-  // スケールした結果をフルサイズに戻す
-  var wImgData=new ImageData(wOut,sW,sH);
-  wctx.putImageData(wImgData,0,0);
+  // フルサイズに戻す
+  var imgd=new ImageData(out,sW,sH);
+  wctx.putImageData(imgd,0,0);
   ctx.drawImage(wc,0,0,W,H);
 
   // シェーディング
